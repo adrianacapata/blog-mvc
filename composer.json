@@ -1,0 +1,14 @@
+{
+    "name": "adriana/blogger",
+    "type": "project",
+
+    "require": {
+      "ext-pdo": "*"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "Blog\\": "src/"
+        }
+    }
+}
