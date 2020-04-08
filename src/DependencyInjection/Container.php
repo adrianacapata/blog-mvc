@@ -2,54 +2,65 @@
 
 namespace Blog\DependencyInjection;
 
-class Container implements ContainerInterface
+use PDO;
+use Blog\Router\Request;
+
+class Container
 {
-    private $dbConnection;
     /**
      * @var array
      */
-    private $parameters;
-
-    /**
-     * Container constructor.
-     * @param array $parameters
-     */
-    public function __construct(array $parameters)
-    {
-        $this->parameters = $parameters;
-    }
+    private static $parameters;
+    /** @var PDO */
+    private static $dbConnection;
+    /** @var Request */
+    private static $request;
 
     /**
      * @param string|null $name
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function getParameters(string $name = null)
+    public static function getParameters(string $name = null)
     {
-        if (!isset($this->parameters[$name])) {
+        if (self::$parameters === null) {
+            require_once __DIR__ . '/../../config/parameters.php';
+            self::$parameters = $parameters;
+        }
+        
+        if (!isset(self::$parameters[$name])) {
             throw new \InvalidArgumentException("`$name` parameter is not defined");
         }
 
-        return $name ? $this->parameters[$name] : $this->parameters;
+        return $name ? self::$parameters[$name] : self::$parameters;
     }
 
     /**
      * @return \PDO
      */
-    public function getDbConnection(): \PDO
+    public static function getDbConnection(): \PDO
     {
-        if ($this->dbConnection === null) {
-            $parameters = $this->getParameters('db');
+        if (self::$dbConnection === null) {
+            $parameters = self::getParameters('db');
 
-            $this->dbConnection = new \PDO(
+            self::$dbConnection = new \PDO(
                 $parameters['hostname'],
                 $parameters['username'],
                 $parameters['password']
             );
         }
 
-        $this->dbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        self::$dbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
-        return $this->dbConnection;
+        return self::$dbConnection;
+    }
+
+    public static function getRequest(): Request
+    {
+        if (self::$request === null) {
+            self::$request = new Request();
+        }
+
+        return self::$request;
     }
 }

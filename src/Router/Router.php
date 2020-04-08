@@ -2,62 +2,72 @@
 
 namespace Blog\Router;
 
-use Blog\DependencyInjection\ContainerInterface;
+use Blog\DependencyInjection\Container;
 use Blog\Router\Exception\NotFoundException;
 
 class Router
 {
     private const CONTROLLER_NAMESPACE = "Blog\\Controller\\";
 
-    private $container;
+    private $request;
+    private $queryParameters;
+    private $postParameters;
+    private $files;
 
     /**
      * Router constructor.
-     * @param ContainerInterface $container
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct()
     {
-        $this->container = $container;
+        $this->request = Container::getRequest();
     }
 
-    private function getUriFirstSegment($urlElements)
-    {
-        return explode('/', $urlElements['path']);
-    }
-
-    private function getQueryParams($urlElements)
-    {
-        return $urlElements['query'] ?? '';
-
-    }
     /**
-     * @param string $url
-     * @return mixed
+     * @return Response
      * @throws NotFoundException
      */
-    public function request(string $url)
+    public function request()
     {
-        $urlElements = parse_url($url);
+        // TODO: move to the request to init its parameters based on the http request data ($_ globals)
 
-        $pathElements = $this->getUriFirstSegment($urlElements);
-
-        $params = $this->getQueryParams($urlElements);
-
-        $FQNController = self::CONTROLLER_NAMESPACE . ucfirst($pathElements[1]) . 'Controller';
+        $FQNController = self::CONTROLLER_NAMESPACE . $this->request->getControllerName() . 'Controller';
 
         if (!class_exists($FQNController)) {
             throw new NotFoundException("Class $FQNController not found");
         }
 
-        $action = (empty($pathElements[2]) ? 'index' : $pathElements[2]) . 'Action';
-
+        $action = $this->request->getActionName() . 'Action';
         $controller = new $FQNController();
 
         if (!method_exists($controller, $action)) {
             throw new NotFoundException("Method $action does not exist in $FQNController");
         }
 
-        return $controller->$action($params);
+        return $controller->$action();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQueryParameters()
+    {
+        return $this->queryParameters;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPostParameters()
+    {
+        return $this->postParameters;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFiles()
+    {
+        return $this->files;
     }
 
 }
