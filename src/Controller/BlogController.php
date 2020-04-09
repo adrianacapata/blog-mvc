@@ -4,14 +4,8 @@ namespace Blog\Controller;
 
 use Blog\Model\Repository\CategoryRepository;
 
-class BlogController extends AbstractController
+class BlogController
 {
-
-    public function testAction()
-    {
-        $entity = $this->getEntity('category');
-        var_dump($entity->get());
-    }
 
     public function indexAction()
     {
@@ -20,9 +14,18 @@ class BlogController extends AbstractController
 
     public function categoriesAction()
     {
-        $categories = new CategoryRepository();
 
-        return $categories->getCategories();
+        $categories = CategoryRepository::fetchCategories();
+echo '<pre>'; var_dump($categories); exit();
+
+    }
+
+    public function categoryAction()
+    {
+        $category = CategoryRepository::findOneById(3);
+//        return new Response(templateName, [variableName => value]);
+
+        echo '<pre>'; var_dump($category); exit();
     }
 
 }
