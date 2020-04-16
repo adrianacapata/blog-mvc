@@ -10,15 +10,25 @@ class Router
     private const CONTROLLER_NAMESPACE = "Blog\\Controller\\";
 
     private $request;
+    private static $instance;
 
     /**
      * Router constructor.
      */
-    public function __construct()
+    private function __construct()
     {
         $this->request = Container::getRequest();
     }
 
+    public static function getInstance()
+    {
+        if (!isset(Router::$instance)) {
+            Router::$instance = new Router();
+        }
+
+        return Router::$instance;
+    }
+    
     /**
      * @return Response
      * @throws HTTPNotFoundException

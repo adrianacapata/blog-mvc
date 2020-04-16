@@ -57,10 +57,6 @@ class Container
 
     public static function getRequest(): Request
     {
-        if (self::$request === null) {
-            self::$request = new Request();
-        }
-
-        return self::$request;
+          return self::$request = Request::getInstance();
     }
 }

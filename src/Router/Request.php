@@ -5,8 +5,14 @@
  */
 namespace Blog\Router;
 
+/**
+ * Class Request
+ * @package Blog\Router
+ */
 class Request
 {
+    private static $instance;
+
     private $url;
     private $queryParameters;
     private $postParameters;
@@ -18,7 +24,7 @@ class Request
     /** @var string */
     private $actionName;
 
-    public function __construct()
+    private function __construct()
     {
         $this->url = $_SERVER['REQUEST_URI'];
         $this->queryParameters = $_GET;
@@ -27,6 +33,18 @@ class Request
         // ...
 
         $this->initControllerAction();
+    }
+
+    /**
+     * @return Request
+     */
+    public static function getInstance()
+    {
+            if (!isset(Request::$instance)) {
+                Request::$instance = new Request();
+            }
+
+            return Request::$instance;
     }
 
     /**
