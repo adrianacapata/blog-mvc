@@ -14,12 +14,10 @@ class BlogController
      */
     public function indexAction()
     {
-        $categories = CategoryRepository::fetchCategories();
         $categoriesTree = CategoryRepository::getCategoryTree();
         $popularity = BlogRepository::getPopularity();
 
         return new Response('category\show.php', [
-            'categories' => $categories,
             'categoriesTree' => $categoriesTree,
             'popularBlogs' => $popularity
         ]);

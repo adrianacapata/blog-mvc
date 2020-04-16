@@ -21,14 +21,16 @@ class BlogRepository
 
     /**
      * calculates the most popular blogs
-     * @return array
+     * formula: 65*views/100 + 15*(likes-dislike)/100 + 20*comments/100
+     *
+     * @return BlogEntity[]
      */
-    public static function getPopularity()
+    public static function getPopularity(): array
     {
         $conn = Container::getDbConnection();
 
         $stmt = $conn->prepare(
-            'SELECT b.title, 
+            'SELECT b.*, 
             ifnull(:viewPercentage*b.views/100, 0) + ifnull(:commentPercentage*COUNT(c.id)/100, 0) + ifnull(:appreciationPercentage*(b.like_count-b.dislike_count)/100, 0) as popularity
             
             FROM `blog` b
@@ -42,22 +44,23 @@ class BlogRepository
             'appreciationPercentage' => self::APPRECIATION_PERCENTAGE
         ]);
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $blogData = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        foreach ($blogData as $blog) {
+            $blogs[] = self::createBlogEntityFromData($blog);
+        }
+
+        return $blogs;
     }
 
     /**
-     * Will return a single Blog entity from db by $id
-     * @param int $id
+     * gets an array with data from db and returns a blog entity object
+     *
+     * @param array $blogData
      * @return BlogEntity
      */
-    public static function findOneById(int $id): BlogEntity
+    private static function createBlogEntityFromData(array $blogData): BlogEntity
     {
-        $conn = Container::getDbConnection();
-
-        $stmt = $conn->prepare('SELECT * FROM `blog` WHERE id = :id');
-        $stmt->execute(['id' => $id]);
-        $blogData = $stmt->fetch(\PDO::FETCH_ASSOC);
-
         $blogEntity = new BlogEntity();
         $blogEntity->setId($blogData['id']);
         $blogEntity->setCategoryId($blogData['category_id']);
@@ -74,4 +77,19 @@ class BlogRepository
         return $blogEntity;
     }
 
+    /**
+     * Will return a single Blog entity from db by $id
+     * @param int $id
+     * @return BlogEntity
+     */
+    public static function findOneById(int $id): BlogEntity
+    {
+        $conn = Container::getDbConnection();
+
+        $stmt = $conn->prepare('SELECT * FROM `blog` WHERE id = :id');
+        $stmt->execute(['id' => $id]);
+        $blogData = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return self::createBlogEntityFromData($blogData);
+    }
 }

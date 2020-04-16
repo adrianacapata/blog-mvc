@@ -1,7 +1,8 @@
 <?php
 
 /**
- * @var \Blog\Model\Entity\BlogEntity[] $categories
+ * @var \Blog\Model\Entity\BlogEntity[] $categoriesTree
+ * * @var \Blog\Model\Entity\BlogEntity[] $popularBlogs
  */
 ?>
 <html lang="en">
@@ -45,7 +46,7 @@
             <?php foreach ($popularBlogs as $blog): ?>
                 <div>
                     <?php
-                        echo $blog['title'];
+                        echo $blog->getTitle();
                     ?>
                 </div>
             <?php endforeach; ?>

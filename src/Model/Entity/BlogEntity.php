@@ -152,9 +152,9 @@ class BlogEntity
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getLikeCount(): int
+    public function getLikeCount(): ?int
     {
         return $this->likeCount;
     }
@@ -162,15 +162,15 @@ class BlogEntity
     /**
      * @param int $likesCount
      */
-    public function setLikesCount(int $likesCount): void
+    public function setLikesCount(?int $likesCount): void
     {
         $this->likesCount = $likesCount;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getDislikeCount(): int
+    public function getDislikeCount(): ?int
     {
         return $this->dislikeCount;
     }
@@ -178,7 +178,7 @@ class BlogEntity
     /**
      * @param int $dislikeCount
      */
-    public function setDislikeCount(int $dislikeCount): void
+    public function setDislikeCount(?int $dislikeCount): void
     {
         $this->dislikeCount = $dislikeCount;
     }
