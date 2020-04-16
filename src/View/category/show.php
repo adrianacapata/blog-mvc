@@ -2,7 +2,7 @@
 
 /**
  * @var \Blog\Model\Entity\BlogEntity[] $categoriesTree
- * * @var \Blog\Model\Entity\BlogEntity[] $popularBlogs
+ * @var \Blog\Model\Entity\BlogEntity[] $popularBlogs
  */
 ?>
 <html lang="en">

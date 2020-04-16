@@ -18,7 +18,6 @@ class BlogRepository
     //percentage nr for comment
     private const COMMENT_PERCENTAGE = 20;
 
-
     /**
      * calculates the most popular blogs
      * formula: 65*views/100 + 15*(likes-dislike)/100 + 20*comments/100
@@ -56,7 +55,9 @@ class BlogRepository
     /**
      * gets an array with data from db and returns a blog entity object
      *
-     * @param array $blogData
+     * @param array $blogData [
+     *
+     * ]
      * @return BlogEntity
      */
     private static function createBlogEntityFromData(array $blogData): BlogEntity
@@ -91,5 +92,28 @@ class BlogRepository
         $blogData = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         return self::createBlogEntityFromData($blogData);
+    }
+
+    public static function findBlogByCategoryId(int $id, ?int $startIndex,  ?int $elementsNr)
+    {
+        $conn = Container::getDbConnection();
+
+        $stmt = $conn->prepare('
+        Select * 
+            FROM `blog`
+            WHERE category_id = :id
+            LIMIT :startIndex, :elementsNr
+        ');
+        $stmt->bindParam('id', $id);
+        $stmt->bindParam('startIndex', $startIndex, \PDO::PARAM_INT);
+        $stmt->bindParam('elementsNr', $elementsNr, \PDO::PARAM_INT);
+        $stmt->execute();
+        $blogData = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        foreach ($blogData as $blog) {
+            $blogs[] = self::createBlogEntityFromData($blog);
+        }
+
+        return $blogs;
     }
 }

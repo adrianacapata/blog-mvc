@@ -2,6 +2,7 @@
 
 namespace Blog\Controller;
 
+use Blog\DependencyInjection\Container;
 use Blog\Model\Repository\BlogRepository;
 use Blog\Model\Repository\CategoryRepository;
 use Blog\Router\Response;
@@ -14,12 +15,9 @@ class BlogController
      */
     public function indexAction()
     {
-        $categoriesTree = CategoryRepository::getCategoryTree();
-        $popularity = BlogRepository::getPopularity();
-
         return new Response('category\show.php', [
-            'categoriesTree' => $categoriesTree,
-            'popularBlogs' => $popularity
+            'categoriesTree' => CategoryRepository::getCategoryTree(),
+            'popularBlogs' => BlogRepository::getPopularity(),
         ]);
     }
 
@@ -33,10 +31,16 @@ echo '<pre>'; var_dump($categories); exit();
 
     public function categoryAction()
     {
-        $category = CategoryRepository::findOneById(3);
-//        return new Response(templateName, [variableName => value]);
+        $request = Container::getRequest();
+        $categoryId = $request->getQueryParameters()['id'];
+        $page = $request->getQueryParameters()['page'];
+        $limit = 2;
 
-        echo '<pre>'; var_dump($category); exit();
+        $offset = ($page == 1) ? 0 : $page*$limit - 1;
+
+        return new Response('category\blog_by_category.php', [
+            'blogs' => BlogRepository::findBlogByCategoryId($categoryId, $offset, $limit)
+        ]);
     }
 
 }
