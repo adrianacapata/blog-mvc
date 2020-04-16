@@ -5,7 +5,9 @@ require_once __DIR__.'/../vendor/autoload.php';
 use Blog\Router\Router;
 
 $router = new Router();
-$router->request();
+$response = $router->request();
+$response->render();
+
 
 //TODO
 // /blog -> BlogController/indexAction

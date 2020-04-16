@@ -3,7 +3,8 @@
     "type": "project",
 
     "require": {
-      "ext-pdo": "*"
+      "ext-pdo": "*",
+        "twbs/bootstrap": "3.4.1"
     },
 
     "autoload": {

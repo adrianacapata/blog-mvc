@@ -21,6 +21,10 @@ class CategoryEntity
     private $name;
 
     /**
+     * @var
+     */
+    private $level;
+    /**
      * @return int
      */
     public function getId(): int
@@ -77,12 +81,27 @@ class CategoryEntity
     }
 
     /**
-     * @param string $name
+     * @param int $name
      */
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
+    /**
+     * @return int
+     */
+    public function getLevel()
+    {
+        return $this->level;
+    }
+
+    /**
+     * @param mixed $level
+     */
+    public function setLevel(int $level): void
+    {
+        $this->level = $level;
+    }
 
 }
