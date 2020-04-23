@@ -1,8 +1,14 @@
 <?php
 /**
- * * @var \Blog\Model\Entity\BlogEntity[] $blogs
+ * @var BlogEntity[] $blogs
+ * @var int $currentPage
+ * @var int $totalPages
+ * @var $pagination[]
+ * @var string $url
+ *
  */
-?>
+
+use Blog\Model\Entity\BlogEntity; ?>
 
 <html lang="en">
 <head>
@@ -22,30 +28,55 @@
         <h1>Blogs by category</h1>
     </div>
 
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Publication Date</th>
-                <th>Likes</th>
-                <th>Dislikes</th>
-                <th>Comments nummber</th>
-            </tr>
-        </thead>
+    <?php if (!empty($blogs)): ?>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Publication Date</th>
+                    <th>Likes</th>
+                    <th>Dislikes</th>
+                    <th>Comments nummber</th>
+                </tr>
+            </thead>
         <tbody>
             <?php foreach ($blogs as $blog): ?>
                 <tr>
-                    <td><?php echo $blog->getTitle();?></td>
-                    <td><?php echo $blog->getCreatedAt();?></td>
-                    <td><?php echo $blog->getLikeCount() ? $blog->getLikeCount() : 0;?> </td>
-                    <td><?php echo $blog->getDislikeCount() ? $blog->getDislikeCount() : 0; ?> </td>
-                    <td><?php echo $blog->getCommentNr();?> </td>
+                    <td><?= $blog->getTitle() ?></td>
+                    <td><?= $blog->getCreatedAt() ?></td>
+                    <td><?= $blog->getLikeCount() ?></td>
+                    <td><?= $blog->getDislikeCount() ?></td>
+                    <td><?= $blog->getCommentNr() ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
-    <div>
+    <?php else: ?>
+        there are no posts in this category
+    <?php endif ?>
 
+    <div class="pagination">
+        <label><b>Current Page: <?= $currentPage . '/' . $totalPages ?></b></label><br />
+        <label>
+            <?php if ($currentPage > 1): ?>
+                <a href="<?= $url .  '&page=' . ($currentPage - 1)?>">&lt;</a>
+            <?php endif ?>
+                <?php foreach ($pagination as $pag): ?>
+                    <?php if ($currentPage !== $pag): ?>
+                        <?php if ($pag === '...'): ?>
+                            <span><?=$pag?></span>
+                        <?php else: ?>
+                            <a href="<?= $url .  '&page=' . $pag ?>"><?=$pag?></a>
+                        <?php endif ?>
+                    <?php endif ?>
+                    <?php if ($currentPage === $pag): ?>
+                        <span style="color: red;"><?=$pag?></span>
+                    <?php endif ?>
+                <?php endforeach; ?>
+                <?php if ($currentPage < $totalPages): ?>
+                    <a href="<?=$url .  '&page=' . ($currentPage + 1)?>">&gt;</a>
+                <?php endif ?>
+        </label>
     </div>
 </body>
 </html>
