@@ -37,9 +37,9 @@
                 <tr>
                     <td><?php echo $blog->getTitle();?></td>
                     <td><?php echo $blog->getCreatedAt();?></td>
-                    <td><?php echo $blog->getLikeCount();?></td>
-                    <td><?php echo $blog->getDislikeCount();?></td>
-                    <td><?php echo rand(1,10); ?></td>
+                    <td><?php echo $blog->getLikeCount() ? $blog->getLikeCount() : 0;?> </td>
+                    <td><?php echo $blog->getDislikeCount() ? $blog->getDislikeCount() : 0; ?> </td>
+                    <td><?php echo $blog->getCommentNr();?> </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

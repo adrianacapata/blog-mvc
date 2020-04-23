@@ -39,6 +39,8 @@ class BlogEntity
     /** @var int */
     private $views;
 
+    private $commentNr;
+
     /**
      * @return int
      */
@@ -152,33 +154,33 @@ class BlogEntity
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getLikeCount(): ?int
+    public function getLikeCount(): int
     {
-        return $this->likeCount;
+        return (int) $this->likeCount;
     }
 
     /**
      * @param int $likesCount
      */
-    public function setLikesCount(?int $likesCount): void
+    public function setLikesCount(int $likesCount): void
     {
         $this->likesCount = $likesCount;
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getDislikeCount(): ?int
+    public function getDislikeCount(): int
     {
-        return $this->dislikeCount;
+        return (int) $this->dislikeCount;
     }
 
     /**
      * @param int $dislikeCount
      */
-    public function setDislikeCount(?int $dislikeCount): void
+    public function setDislikeCount(int $dislikeCount): void
     {
         $this->dislikeCount = $dislikeCount;
     }
@@ -214,4 +216,21 @@ class BlogEntity
     {
         $this->views = $views;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCommentNr()
+    {
+        return $this->commentNr;
+    }
+
+    /**
+     * @param mixed $commentNr
+     */
+    public function setCommentNr($commentNr): void
+    {
+        $this->commentNr = $commentNr;
+    }
+
 }

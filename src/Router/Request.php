@@ -38,13 +38,13 @@ class Request
     /**
      * @return Request
      */
-    public static function getInstance()
+    public static function getInstance(): Request
     {
-            if (!isset(Request::$instance)) {
-                Request::$instance = new Request();
-            }
+        if (!isset(self::$instance)) {
+            self::$instance = new Request();
+        }
 
-            return Request::$instance;
+        return self::$instance;
     }
 
     /**
@@ -82,7 +82,7 @@ class Request
     /**
      * @return string
      */
-    public function getControllerName()
+    public function getControllerName(): string
     {
         return $this->controllerName;
     }
@@ -90,19 +90,19 @@ class Request
     /**
      * @return string
      */
-    public function getActionName()
+    public function getActionName(): string
     {
         return $this->actionName;
     }
 
     // .... public methods
 
-    private function initControllerAction()
+    private function initControllerAction(): void
     {
-        $urlElements = explode('/', $this->url);
+        preg_match_all('/(?:\/)(\w+)/', $this->url, $urlElements);
 
-        $this->controllerName = $urlElements[1];
+        $this->controllerName = $urlElements[1][0];
 
-        $this->actionName = empty($urlElements[2]) ? 'index' : $urlElements[2];
+        $this->actionName = empty($urlElements[1][1]) ? 'index' : $urlElements[1][1];
     }
 }

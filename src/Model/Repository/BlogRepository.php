@@ -45,6 +45,7 @@ class BlogRepository
 
         $blogData = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+        $blogs = array();
         foreach ($blogData as $blog) {
             $blogs[] = self::createBlogEntityFromData($blog);
         }
@@ -74,6 +75,7 @@ class BlogRepository
         $blogEntity->setDislikeCount($blogData['dislike_count']);
         $blogEntity->setUpdatedAt($blogData['updated_at']);
         $blogEntity->setViews($blogData['views']);
+        $blogEntity->setCommentNr($blogData['comments_nr'] ?? null);
 
         return $blogEntity;
     }
@@ -94,26 +96,52 @@ class BlogRepository
         return self::createBlogEntityFromData($blogData);
     }
 
-    public static function findBlogByCategoryId(int $id, ?int $startIndex,  ?int $elementsNr)
+    /**
+     * Returns blog entities filtered by category id
+     *
+     * @param int $categoryId
+     * @param int $limit
+     * @param int|null $offset
+     * @return BlogEntity[]
+     */
+    public static function findBlogByCategoryId(int $categoryId, int $limit, int $offset = 0): array
     {
         $conn = Container::getDbConnection();
 
         $stmt = $conn->prepare('
-        Select * 
-            FROM `blog`
+            SELECT b.*, COALESCE(COUNT(c.id), 0) comments_nr  
+            FROM `blog` b
+            LEFT JOIN comment c on b.id = c.blog_id
             WHERE category_id = :id
-            LIMIT :startIndex, :elementsNr
+            GROUP BY b.id
+            LIMIT :offset, :limit
         ');
-        $stmt->bindParam('id', $id);
-        $stmt->bindParam('startIndex', $startIndex, \PDO::PARAM_INT);
-        $stmt->bindParam('elementsNr', $elementsNr, \PDO::PARAM_INT);
+        $stmt->bindParam('id', $categoryId);
+        $stmt->bindParam('offset', $offset, \PDO::PARAM_INT);
+        $stmt->bindParam('limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();
         $blogData = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+        $blogs = array();
         foreach ($blogData as $blog) {
             $blogs[] = self::createBlogEntityFromData($blog);
         }
 
         return $blogs;
+    }
+
+    public static function getAllBlogsByCategoryId(int $categoryId)
+    {
+        $conn = Container::getDbConnection();
+        $stmt = $conn->prepare('
+            SELECT id
+            FROM `blog`
+            WHERE category_id = :categoryId
+          '
+        );
+        $stmt->execute(['categoryId' => $categoryId]);
+        $blogs = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return count($blogs);
     }
 }
