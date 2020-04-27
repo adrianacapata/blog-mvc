@@ -1,12 +1,12 @@
 <?php
 
-namespace Blog\Router;
+namespace Blog\Router\Response;
 
 use Blog\Router\Exception\InvalidTemplateException;
 
-class Response
+class Response implements ResponseInterface
 {
-    private const TEMPLATE_FILE_PATH = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR;
+    private const TEMPLATE_FILE_PATH = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR;
 
     private $filename;
     private $variables;
@@ -33,4 +33,5 @@ class Response
         //header (status code)
         //body (body header -> title, body -> content) => html
     }
+
 }
