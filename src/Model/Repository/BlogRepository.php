@@ -71,7 +71,7 @@ class BlogRepository
         $blogEntity->setContent($blogData['content']);
         $blogEntity->setCreatedAt($blogData['created_at']);
         $blogEntity->setStatus($blogData['status']);
-        $blogEntity->setLikesCount($blogData['like_count']);
+        $blogEntity->setLikeCount($blogData['like_count']);
         $blogEntity->setDislikeCount($blogData['dislike_count']);
         $blogEntity->setUpdatedAt($blogData['updated_at']);
         $blogEntity->setViews($blogData['views']);
@@ -82,15 +82,21 @@ class BlogRepository
 
     /**
      * Will return a single Blog entity from db by $id
-     * @param int $id
+     * @param int $blogId
      * @return BlogEntity
      */
-    public static function findOneById(int $id): BlogEntity
+    public static function findOneById(int $blogId): BlogEntity
     {
         $conn = Container::getDbConnection();
 
-        $stmt = $conn->prepare('SELECT * FROM `blog` WHERE id = :id');
-        $stmt->execute(['id' => $id]);
+        $stmt = $conn->prepare('
+            SELECT b.*, COALESCE(COUNT(c.id), 0) comments_nr  
+            FROM `blog` b
+            LEFT JOIN comment c on b.id = c.blog_id
+            WHERE blog_id = :blogId
+            GROUP BY b.id
+            ');
+        $stmt->execute(['blogId' => $blogId]);
         $blogData = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         return self::createBlogEntityFromData($blogData);
@@ -130,7 +136,7 @@ class BlogRepository
         return $blogs;
     }
 
-    public static function getAllBlogsByCategoryId(int $categoryId)
+    public static function getAllBlogsByCategoryId(int $categoryId): int
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -143,5 +149,28 @@ class BlogRepository
         $blogs = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         return count($blogs);
+    }
+
+    public static function incrementLikeCountByBlogId(int $blogId): void
+    {
+        $conn = Container::getDbConnection();
+        $stmt = $conn->prepare('
+            UPDATE `blog` 
+            SET `like_count` = `like_count` + 1 
+            WHERE id = :blogId
+        ');
+        $stmt->execute(['blogId' => $blogId]);
+    }
+
+    public static function incrementDislikeCountByBlogId(int $blogId): void
+    {
+        $conn = Container::getDbConnection();
+        $stmt = $conn->prepare('
+            UPDATE `blog` 
+            SET `dislike_count` = `dislike_count` + 1 
+            WHERE id = :blogId
+        ');
+        $stmt->execute(['blogId' => $blogId]);
+
     }
 }

@@ -162,11 +162,11 @@ class BlogEntity
     }
 
     /**
-     * @param int $likesCount
+     * @param int $likeCount
      */
-    public function setLikesCount(int $likesCount): void
+    public function setLikeCount(int $likeCount): void
     {
-        $this->likesCount = $likesCount;
+        $this->likeCount = $likeCount;
     }
 
     /**
