@@ -1,9 +1,8 @@
 
 RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(?:[^/]*/)*([^/.]+\.(?:jpe?g|gif|bmp|png|tiff|ico))$ /images/$1 [R=301,L,NC]
-RewriteRule ^(?:[^/]*/)*([^/.]+\.(?:css))$ /css/$1 [R=301,L,NC]
-RewriteRule ^(?:[^/]*/)*([^/.]+\.(?:js))$ /js/$1 [R=301,L,NC]
+RewriteCond %{REQUEST_URI} \.(css|ico|gif|jpg|jpeg|png|swf|js)$
+RewriteRule (.*) - [L]
+
 # The following rule tells Apache that if the requested filename
 # exists, simply serve it.
 RewriteCond %{REQUEST_FILENAME} -s [OR]
@@ -16,6 +15,7 @@ RewriteRule ^.*$ - [L]
 # the base path will be prepended to allow proper resolution of
 # the index.php file; it will work in non-aliased environments
 # as well, providing a safe, one-size fits all solution.
+
 RewriteCond %{REQUEST_URI}::$1 ^(/.+)/(.*)::\2$
 RewriteRule ^(.*) - [E=BASE:%1]
 RewriteRule ^(.*)$ %{ENV:BASE}/index.php [L]
