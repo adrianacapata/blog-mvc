@@ -39,7 +39,9 @@ $(document).ready(function () {
 
    $('#add-comment').on('submit', function (event) {
        event.preventDefault();
-       let formData = $('#add-comment').serialize();
+       $('.has-error').remove();
+       //serialize input data and send it to validation function
+       let formData = $(this).serialize();
 
        $.ajax({
            url: '/comment/add',
@@ -49,10 +51,20 @@ $(document).ready(function () {
 
            success: function (response) {
                if (response.status === 'success') {
-                   $('#add-comment')[0].reset();
+                   $('#add-comment').reset();
                    $('#show-comment').append('<label>' + response.author + ' at ' + response.date + '</label><p> ' + response.comment + '</p>');
+               } else {
+                   if (typeof response.err.global !== 'undefined') {
+                        $(this).append('<span class="has-error">' + response.err.global + '</span>')
+                   }
+                   if (typeof response.err.author !== 'undefined') {
+                       $('.author').append('<span class="has-error">' + response.err.author + '</span>');
+                   }
+                   if (typeof response.err.comment !== 'undefined') {
+                       $('.comment').append('<span class="has-error">' + response.err.comment + '</span>');
+                   }
                }
-           }
+            }
        });
    });
 });

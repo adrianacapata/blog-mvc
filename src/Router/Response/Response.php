@@ -11,7 +11,7 @@ class Response implements ResponseInterface
     private $filename;
     private $variables;
 
-    public function __construct(string $filename, array $variables)
+    public function __construct(string $filename, array $variables = [])
     {
         $this->filename = self::TEMPLATE_FILE_PATH . $filename;
         $this->variables = $variables;
@@ -31,7 +31,5 @@ class Response implements ResponseInterface
             throw new InvalidTemplateException("`$this->filename` template file not found");
         }
         //header (status code)
-        //body (body header -> title, body -> content) => html
     }
-
 }

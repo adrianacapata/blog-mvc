@@ -55,11 +55,11 @@ use Blog\Helper\TemplateHelper; ?>
             <div class="blog-add-comment"> Add comment
                 <form method="POST" action="/comment/add" id="add-comment">
                     <input type="hidden" name="blog_id" value="<?=$blog->getId()?>"/>
-                    <div class="comment-author">
+                    <div class="form-group author">
                         <input type="text" name="author_name" id="author_name" class="form-control" placeholder="Author name" />
                     </div>
-                    <div class="comment-content">
-                        <textarea name="comment" id="comment" class="form-control" placeholder="comment..." rows="5"> </textarea>
+                    <div class="form-group comment">
+                        <textarea name="comment" id="comment" class="form-control" placeholder="comment..." rows="5"></textarea>
                     </div>
                     <div class="form-group">
                         <button type="submit" name="submit" id="submit" class="btn btn-info"> Add comment </button>

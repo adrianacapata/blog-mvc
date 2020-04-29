@@ -56,11 +56,9 @@ class CommentRepository
     /**
      * Inserts a comment entry
      *
-     * @param int $blogId
-     * @param string $authorName
-     * @param string $content
+     * @param CommentEntity $commentEntity
      */
-    public static function addCommentToBlogId(int $blogId, string $authorName, string $content): void
+    public static function addCommentToBlogId(CommentEntity $commentEntity): void
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -68,9 +66,9 @@ class CommentRepository
             (blog_id, author_name, content) 
             VALUES (:blogId, :authorName, :content) 
         ');
-        $stmt->bindParam('blogId', $blogId, \PDO::PARAM_INT);
-        $stmt->bindParam('authorName', $authorName);
-        $stmt->bindParam('content', $content);
+        $stmt->bindParam('blogId', $commentEntity->getBlogId(), \PDO::PARAM_INT);
+        $stmt->bindParam('authorName', $commentEntity->getAuthorName());
+        $stmt->bindParam('content', $commentEntity->getContent());
         $stmt->execute();
     }
 
