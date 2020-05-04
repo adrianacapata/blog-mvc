@@ -27,13 +27,12 @@ class CommentValidator
      * @param string $comment
      * @return CommentEntity|null
      */
-    public function validate()
+    public function validate(): ?CommentEntity
     {
-        $blogId = (int) $this->request->getPostParameters()['blog_id'];
-        $author = $this->request->getPostParameters()['author_name'];
-        $comment = $this->request->getPostParameters()['comment'];
-
-        $commentEntity = null;
+        $postParameters = $this->request->getPostParameters();
+        $blogId = (int) $postParameters['blog_id'];
+        $author = $postParameters['author_name'];
+        $comment = $postParameters['comment'];
 
         $this->validateBlogId($blogId);
         $this->validateAuthor($author);
@@ -44,9 +43,11 @@ class CommentValidator
             $commentEntity->setBlogId($blogId);
             $commentEntity->setAuthorName($author);
             $commentEntity->setContent($comment);
+
+            return $commentEntity;
         }
 
-        return $commentEntity;
+        return null;
     }
 
     /**

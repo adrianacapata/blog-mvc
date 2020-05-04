@@ -1,6 +1,7 @@
 <?php
 /**
  * @var BlogEntity[] $blogs
+ * @var \Blog\Model\Entity\CategoryEntity $category
  * @var int $currentPage
  * @var int $totalPages
  * @var $pagination[]
@@ -25,7 +26,7 @@ use Blog\Model\Entity\BlogEntity; ?>
 
 <body>
     <div class="page-header">
-        <h1>Blogs by category</h1>
+        <h1>Blogs by category: <?=$category->getName()?></h1>
     </div>
 
     <?php if (!empty($blogs)): ?>

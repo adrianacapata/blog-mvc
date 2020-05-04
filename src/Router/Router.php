@@ -4,12 +4,14 @@ namespace Blog\Router;
 
 use Blog\DependencyInjection\Container;
 use Blog\Router\Exception\HTTPNotFoundException;
+use Blog\Router\Response\ResponseInterface;
 
 class Router
 {
     private const CONTROLLER_NAMESPACE = "Blog\\Controller\\";
 
     private $request;
+    /** @var Router */
     private static $instance;
 
     /**
@@ -20,7 +22,10 @@ class Router
         $this->request = Container::getRequest();
     }
 
-    public static function getInstance()
+    /**
+     * @return Router
+     */
+    public static function getInstance(): Router
     {
         if (!isset(Router::$instance)) {
             Router::$instance = new Router();
@@ -30,10 +35,10 @@ class Router
     }
     
     /**
-     * @return Response
+     * @return ResponseInterface
      * @throws HTTPNotFoundException
      */
-    public function request()
+    public function request(): ResponseInterface
     {
         $FQNController = self::CONTROLLER_NAMESPACE . $this->request->getControllerName() . 'Controller';
 

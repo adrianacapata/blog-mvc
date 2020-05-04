@@ -56,7 +56,7 @@ class Request
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getQueryParameters()
     {
@@ -64,7 +64,7 @@ class Request
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getPostParameters()
     {
@@ -72,7 +72,7 @@ class Request
     }
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getFiles()
     {
@@ -101,7 +101,7 @@ class Request
     {
         preg_match_all('/(?:\/)(\w+)/', $this->url, $urlElements);
 
-        $this->controllerName = $urlElements[1][0];
+        $this->controllerName = $urlElements[1][0] ?? null;
 
         $this->actionName = empty($urlElements[1][1]) ? 'index' : $urlElements[1][1];
     }
