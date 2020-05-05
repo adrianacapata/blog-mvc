@@ -21,7 +21,7 @@ class BlogRepository
     private const COMMENT_PERCENTAGE = 20;
 
     /**
-     * gets an array with data from db and returns a blog entity object
+     * gets an array with data from db and returns a post entity object
      *
      * @param array $blogData [
      *
@@ -59,7 +59,7 @@ class BlogRepository
 
         $stmt = $conn->prepare('
             SELECT b.*, COALESCE(COUNT(c.id), 0) comments_nr  
-            FROM `blog` b
+            FROM `post` b
             LEFT JOIN comment c on b.id = c.blog_id
             WHERE blog_id = :blogId
             GROUP BY b.id
@@ -82,8 +82,7 @@ class BlogRepository
 
         $stmt = $conn->prepare(
             'SELECT b.*, 
-            ifnull(:viewPercentage*b.views/100, 0) + ifnull(:commentPercentage*COUNT(c.id)/100, 0) + ifnull(:appreciationPercentage*(b.like_count-b.dislike_count)/100, 0) as popularity
-            
+            ifnull(:viewPercentage*b.views/100, 0) + ifnull(:commentPercentage*COUNT(c.id)/100, 0) + ifnull(:appreciationPercentage*(b.like_count-b.dislike_count)/100, 0) as popularity, COALESCE(COUNT(c.id), 0) comments_nr
             FROM `blog` b
             left JOIN comment c on b.id = c.blog_id
             GROUP BY b.id
@@ -106,7 +105,7 @@ class BlogRepository
     }
 
     /**
-     * Returns blog entities filtered by category id
+     * Returns post entities filtered by category id
      *
      * @param int $categoryId
      * @param int $limit
@@ -119,7 +118,7 @@ class BlogRepository
 
         $stmt = $conn->prepare('
             SELECT b.*, COALESCE(COUNT(c.id), 0) comments_nr  
-            FROM `blog` b
+            FROM `post` b
             LEFT JOIN comment c on b.id = c.blog_id
             WHERE category_id = :id
             GROUP BY b.id
@@ -144,7 +143,7 @@ class BlogRepository
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
             SELECT count(*)
-            FROM `blog`
+            FROM `post`
             WHERE category_id = :categoryId
           '
         );
@@ -160,7 +159,7 @@ class BlogRepository
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
-            UPDATE `blog` 
+            UPDATE `post` 
             SET `like_count` = `like_count` + 1 
             WHERE id = :blogId
         ');
@@ -171,7 +170,7 @@ class BlogRepository
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
-            UPDATE `blog` 
+            UPDATE `post` 
             SET `dislike_count` = `dislike_count` + 1 
             WHERE id = :blogId
         ');
