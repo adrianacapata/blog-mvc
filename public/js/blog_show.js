@@ -3,7 +3,7 @@ $(document).ready(function () {
        let blogId = $(this).data('id');
 
        $.ajax({
-           url: '/blog/dislike',
+           url: '/post/dislike',
            type: 'get',
            data: {
                'blog_id': blogId
@@ -22,7 +22,7 @@ $(document).ready(function () {
        let blogId = $(this).data('id');
 
        $.ajax({
-           url: '/blog/like',
+           url: '/post/like',
            type: 'get',
            data: {
                'blog_id': blogId
