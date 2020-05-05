@@ -40,13 +40,4 @@ class Response implements ResponseInterface
             throw new InvalidTemplateException("`$this->filename` template file not found");
         }
     }
-
-    /**
-     * @param mixed $httpStatusCode
-     */
-    public function setHttpStatusCode($httpStatusCode): void
-    {
-        $this->httpStatusCode = $httpStatusCode;
-    }
-
 }
