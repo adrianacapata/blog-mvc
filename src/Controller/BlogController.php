@@ -3,13 +3,13 @@
 namespace Blog\Controller;
 
 use Blog\DependencyInjection\Container;
-use Blog\Helper\TemplateHelper;
 use Blog\Model\Repository\BlogRepository;
 use Blog\Model\Repository\CategoryRepository;
 use Blog\Model\Repository\CommentRepository;
 use Blog\Router\Exception\HTTPNotFoundException;
 use Blog\Router\Response\JSONResponse;
 use Blog\Router\Response\Response;
+use Exception;
 
 class BlogController
 {
@@ -56,7 +56,7 @@ class BlogController
         try {
             BlogRepository::incrementLikeCountByBlogId($blogId);
             $status = 'success';
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $status = 'failed';
         }
 
@@ -69,11 +69,11 @@ class BlogController
     {
         $request = Container::getRequest();
         $blogId = $request->getQueryParameters()['blog_id'];
-//        try cactch
+
         try {
             BlogRepository::incrementDislikeCountByBlogId($blogId);
             $status = 'success';
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $status = 'failed';
         }
 

@@ -37,6 +37,7 @@ $(document).ready(function () {
        });
    });
 
+   //add comment
    $('#add-comment').on('submit', function (event) {
        event.preventDefault();
        $('.has-error').remove();
@@ -66,4 +67,28 @@ $(document).ready(function () {
            },
        });
    });
+
+   //subscribe to newsletter
+    $('#subscribe').on('submit', function (event) {
+       event.preventDefault();
+       $('.alert').remove();
+       let email = $(this).serialize();
+
+       $.ajax({
+           url: '/newsletter/subscribe',
+           type: 'post',
+           data: email,
+           dataType: 'json',
+           
+           success: function (response) {
+               $('#subscribe').trigger('reset');
+               $('.subscribe').append('<div class="alert alert-success" role="alert">' + '  You subscribed to our newsletter!' +'</div>');
+           },
+           error: function (request) {
+               if (request.responseJSON.errors.email !== 'undefined') {
+                   $('.subscribe').append('<div class="alert alert-danger" role="alert">' + request.responseJSON.errors.email +'</div>');
+               }
+           }
+       })
+    });
 });

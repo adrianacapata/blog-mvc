@@ -2,24 +2,25 @@
 
 namespace Blog\DependencyInjection;
 
+use InvalidArgumentException;
 use PDO;
 use Blog\Router\Request;
+use Swift_SmtpTransport;
 
 class Container
 {
-    /**
-     * @var array
-     */
+    /** @var array */
     private static $parameters;
     /** @var PDO */
     private static $dbConnection;
     /** @var Request */
     private static $request;
-
+    /** @var Swift_SmtpTransport */
+    private static $mailer;
     /**
      * @param string|null $name
      * @return mixed
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function getParameters(string $name = null)
     {
@@ -29,28 +30,28 @@ class Container
         }
         
         if (!isset(self::$parameters[$name])) {
-            throw new \InvalidArgumentException("`$name` parameter is not defined");
+            throw new InvalidArgumentException("`$name` parameter is not defined");
         }
 
         return $name ? self::$parameters[$name] : self::$parameters;
     }
 
     /**
-     * @return \PDO
+     * @return PDO
      */
-    public static function getDbConnection(): \PDO
+    public static function getDbConnection(): PDO
     {
         if (self::$dbConnection === null) {
             $parameters = self::getParameters('db');
 
-            self::$dbConnection = new \PDO(
+            self::$dbConnection = new PDO(
                 $parameters['hostname'],
                 $parameters['username'],
                 $parameters['password']
             );
         }
 
-        self::$dbConnection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        self::$dbConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         return self::$dbConnection;
     }
@@ -58,5 +59,20 @@ class Container
     public static function getRequest(): Request
     {
           return self::$request = Request::getInstance();
+    }
+
+    //TODO singleton (as dbconn)
+    public static function getMailer()
+    {
+        if (self::$mailer === null) {
+            $parameters = self::getParameters('swift_mailer');
+
+            $smtpTransport = (new Swift_SmtpTransport($parameters['host'], $parameters['port'], $parameters['encryption']))
+                ->setUsername($parameters['sender_address'])
+                ->setPassword($parameters['password']);
+
+            self::$mailer = new \Swift_Mailer($smtpTransport);
+        }
+        return new Mailer(self::$mailer);
     }
 }

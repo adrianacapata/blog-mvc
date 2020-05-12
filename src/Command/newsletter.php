@@ -2,7 +2,7 @@
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
-use Blog\Command\SendMailCommand;
+use Blog\Command\NewsletterCommand;
 
-$command = new SendMailCommand();
-$command->execute();
+$newsletter = new NewsletterCommand();
+$newsletter->execute();

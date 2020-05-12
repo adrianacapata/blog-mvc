@@ -34,6 +34,6 @@ use Blog\Model\Entity\NewsletterEntity;
         </tbody>
     </table>
 <div>
-    <a href="http://blog.local/subscribe/remove?email=<?php echo $email->getEmail()?>">Unsubscribe</a>
+    <a href="http://blog.local/newsletter/remove?email=<?php echo $email->getEmail()?>">Unsubscribe</a>
 </div>
 

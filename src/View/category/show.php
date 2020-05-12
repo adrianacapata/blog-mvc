@@ -14,8 +14,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Blog</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-        <link href="/public/css/style.css" rel="stylesheet">
-        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link href="/css/style.css" rel="stylesheet">
+    <script src="/js/blog_show.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -50,6 +52,13 @@
                     ?>
                 </div>
             <?php endforeach; ?>
+        </div>
+        <div class="subscribe form-group">Subscribe to our newsletter
+            <form method="post" action="/blog/subscribe" id="subscribe">
+                <label>Enter your email:</label>
+                <input type="email" name="email" id="email"/>
+                <button type="submit" id="submit" class="btn btn-info">Subscribe</button>
+            </form>
         </div>
     </div>
 
