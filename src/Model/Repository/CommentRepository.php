@@ -4,6 +4,7 @@ namespace Blog\Model\Repository;
 
 use Blog\DependencyInjection\Container;
 use Blog\Model\Entity\CommentEntity;
+use PDO;
 
 class CommentRepository
 {
@@ -44,7 +45,7 @@ class CommentRepository
             ORDER BY c.created_at DESC
         ');
         $stmt->execute(['blogId' => $blogId]);
-        $commentsData = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $commentsData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $comments = [];
         foreach ($commentsData as $commentData) {
@@ -66,9 +67,9 @@ class CommentRepository
             (blog_id, author_name, content) 
             VALUES (:blogId, :authorName, :content) 
         ');
-        $stmt->bindParam('blogId', $commentEntity->getBlogId(), \PDO::PARAM_INT);
-        $stmt->bindParam('authorName', $commentEntity->getAuthorName());
-        $stmt->bindParam('content', $commentEntity->getContent());
+        $stmt->bindValue('blogId', $commentEntity->getBlogId(), PDO::PARAM_INT);
+        $stmt->bindValue('authorName', $commentEntity->getAuthorName());
+        $stmt->bindValue('content', $commentEntity->getContent());
         $stmt->execute();
     }
 
@@ -89,8 +90,8 @@ class CommentRepository
             LIMIT 1
         ');
         $stmt->execute(['blogId' => $blogId]);
-        $comment = $stmt->fetch(\PDO::FETCH_ASSOC);
+        $comment = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return self::createCommentEntityFromData($comment);
+        return $comment ? self::createCommentEntityFromData($comment) : null;
     }
 }

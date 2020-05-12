@@ -11,12 +11,11 @@ use Exception;
 
 class CommentController
 {
-    public function addAction()
+    public function addAction(): JSONResponse
     {
         //check if POST else 404
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return new JSONResponse([
-                'status' => Response::HTTP_STATUS_NOT_FOUND,
                 'errors' => [
                     'global' => 'error occurred when creating the comment'
                 ],
@@ -30,7 +29,6 @@ class CommentController
                 CommentRepository::addCommentToBlogId($commentEntity);
 
                 return new JSONResponse([
-                    'status' => Response::HTTP_STATUS_OK,
                     'author' => $commentEntity->getAuthorName(),
                     'comment' => $commentEntity->getContent(),
                     'date' => $commentEntity->getCreatedAt(),
@@ -45,7 +43,6 @@ class CommentController
         }
 
         return new JSONResponse([
-            'status' => Response::HTTP_STATUS_BAD_REQUEST,
             'errors' => $errors,
         ], Response::HTTP_STATUS_BAD_REQUEST);
     }

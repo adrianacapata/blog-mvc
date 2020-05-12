@@ -11,8 +11,10 @@ class CommentValidator
     /** @var Request */
     private $request;
 
+    /** @var array  */
     private $errors = [];
 
+    /** @var bool  */
     private $isValid = true;
 
     public function __construct(Request $request)
@@ -21,18 +23,16 @@ class CommentValidator
     }
 
     /**
-     * Returns a validated Comment Entity or null
+     * Returns a valid Comment Entity or null
      *
-     * @param string $author
-     * @param string $comment
      * @return CommentEntity|null
      */
     public function validate(): ?CommentEntity
     {
         $postParameters = $this->request->getPostParameters();
-        $blogId = (int) $postParameters['blog_id'];
-        $author = $postParameters['author_name'];
-        $comment = $postParameters['comment'];
+        $blogId = $postParameters['blog_id'] ?? null;
+        $author = $postParameters['author_name'] ?? null;
+        $comment = $postParameters['comment'] ?? null;
 
         $this->validateBlogId($blogId);
         $this->validateAuthor($author);
@@ -40,7 +40,7 @@ class CommentValidator
 
         if ($this->isValid) {
             $commentEntity = new CommentEntity();
-            $commentEntity->setBlogId($blogId);
+            $commentEntity->setBlogId((int)$blogId);
             $commentEntity->setAuthorName($author);
             $commentEntity->setContent($comment);
 
@@ -59,9 +59,9 @@ class CommentValidator
     }
 
     /**
-     * @param int $blogId
+     * @param mixed $blogId
      */
-    private function validateBlogId(int $blogId): void
+    private function validateBlogId($blogId): void
     {
         if (!filter_var($blogId, FILTER_VALIDATE_INT)) {
             $this->isValid = false;
@@ -69,9 +69,9 @@ class CommentValidator
     }
 
     /**
-     * @param string $author
+     * @param string|null $author
      */
-    private function validateAuthor(string $author): void
+    private function validateAuthor(?string $author): void
     {
         if (!$author) {
             $this->errors['author'] = 'Author field is required';
@@ -86,9 +86,9 @@ class CommentValidator
     }
 
     /**
-     * @param string $comment
+     * @param string|null $comment
      */
-    private function validateComment(string $comment): void
+    private function validateComment(?string $comment): void
     {
         $comment = $this->validateInput($comment);
         if (!$comment || strlen($comment) < 3) {

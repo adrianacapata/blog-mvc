@@ -43,9 +43,9 @@ use Blog\Helper\TemplateHelper; ?>
             </div>
 
             <div class="blog-comment">
-                <duv id="show-comment">
+                <div id="show-comment">
 
-                </duv>
+                </div>
                 <?php foreach ($comments as $comment): ?>
                     <label><?=$comment->getAuthorName()?> at <?=$comment->getCreatedAt()?></label>
                     <p><?=$comment->getContent()?></p>
