@@ -59,7 +59,7 @@ class BlogRepository
 
         $stmt = $conn->prepare('
             SELECT b.*, COALESCE(COUNT(c.id), 0) comments_nr  
-            FROM `post` b
+            FROM `blog` b
             LEFT JOIN comment c on b.id = c.blog_id
             WHERE blog_id = :blogId
             GROUP BY b.id
@@ -85,13 +85,15 @@ class BlogRepository
             ifnull(:viewPercentage*b.views/100, 0) + ifnull(:commentPercentage*COUNT(c.id)/100, 0) + ifnull(:appreciationPercentage*(b.like_count-b.dislike_count)/100, 0) as popularity, COALESCE(COUNT(c.id), 0) comments_nr
             FROM `blog` b
             left JOIN comment c on b.id = c.blog_id
+            WHERE b.status = :published
             GROUP BY b.id
             ORDER BY popularity DESC'
         );
         $stmt->execute([
             'viewPercentage' => self::VIEW_PERCENTAGE,
             'commentPercentage' => self::COMMENT_PERCENTAGE,
-            'appreciationPercentage' => self::APPRECIATION_PERCENTAGE
+            'appreciationPercentage' => self::APPRECIATION_PERCENTAGE,
+            'published' => BlogEntity::STATUS_PUBLISHED
         ]);
 
         $blogData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -118,14 +120,15 @@ class BlogRepository
 
         $stmt = $conn->prepare('
             SELECT b.*, COALESCE(COUNT(c.id), 0) comments_nr  
-            FROM `post` b
+            FROM `blog` b
             LEFT JOIN comment c on b.id = c.blog_id
-            WHERE category_id = :id
+            WHERE category_id = :id AND b.status = :published
             GROUP BY b.id
             LIMIT :offset, :limit
         ');
         $stmt->bindParam('id', $categoryId);
         $stmt->bindParam('offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue('published', BlogEntity::STATUS_PUBLISHED);
         $stmt->bindParam('limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         $blogData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -143,11 +146,14 @@ class BlogRepository
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
             SELECT count(*)
-            FROM `post`
-            WHERE category_id = :categoryId
+            FROM `blog`
+            WHERE category_id = :categoryId AND status = :published
           '
         );
-        $stmt->execute(['categoryId' => $categoryId]);
+        $stmt->execute([
+            'categoryId' => $categoryId,
+            'published' => BlogEntity::STATUS_PUBLISHED
+        ]);
 
         return $stmt->fetchColumn();
     }
@@ -159,7 +165,7 @@ class BlogRepository
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
-            UPDATE `post` 
+            UPDATE `blog` 
             SET `like_count` = `like_count` + 1 
             WHERE id = :blogId
         ');
@@ -170,10 +176,50 @@ class BlogRepository
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
-            UPDATE `post` 
+            UPDATE `blog` 
             SET `dislike_count` = `dislike_count` + 1 
             WHERE id = :blogId
         ');
         $stmt->execute(['blogId' => $blogId]);
+    }
+
+    /**
+     * Archive blogs older than one year
+     * Returns nr of archived blogs
+     * @return int
+     */
+    public static function archiveBlogs(): ?int
+    {
+        $conn = Container::getDbConnection();
+        $stmt = $conn->prepare('
+            UPDATE `blog`
+            SET `status` = :archived
+            WHERE updated_at < DATE_SUB(NOW(), INTERVAL 1 YEAR) 
+              AND `status` != :archived
+        ');
+        $stmt->execute(['archived' => BlogEntity::STATUS_ARCHIVED]);
+
+        return $stmt->rowCount();
+    }
+
+    /**
+     * @return ArrayObject|BlogEntity[]
+     */
+    public static function getArchivedBlogs(): ArrayObject
+    {
+        $conn = Container::getDbConnection();
+        $stmt = $conn->query('
+            SELECT * FROM `blog`
+            WHERE `status` = :archived
+        ');
+        $stmt->bindValue('archived', BlogEntity::STATUS_ARCHIVED);
+        $blogData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $blogs = new ArrayObject();
+        foreach ($blogData as $blog) {
+            $blogs->append(self::createBlogEntityFromData($blog));
+        }
+
+        return $blogs;
     }
 }

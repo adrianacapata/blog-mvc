@@ -6,6 +6,11 @@ namespace Blog\Model\Entity;
 
 class BlogEntity
 {
+    public const STATUS_UNPUBLISHED = 0;
+    public const STATUS_PUBLISHED = 1;
+    public const STATUS_ARCHIVED = 2;
+    public const STATUS_DISABLE = 3;
+
     /** @var int */
     private $id;
 

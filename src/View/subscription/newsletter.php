@@ -1,15 +1,16 @@
 <?php
 /**
- * @var BlogEntity $posts
+ * @var BlogEntity[] $posts
+ * @var NewsletterEntity $email
  */
 
 use Blog\Model\Entity\BlogEntity;
+use Blog\Model\Entity\NewsletterEntity;
 
 ?>
 
-<div>Most popular posts by category: </div>
+<div>Most popular posts: </div>
 
-<?php if (!empty($posts)): ?>
     <table class="table table-hover">
         <thead>
         <tr>
@@ -32,7 +33,7 @@ use Blog\Model\Entity\BlogEntity;
         <?php endforeach; ?>
         </tbody>
     </table>
-<?php else: ?>
-    <div>there are no posts in this category</div>
-<?php endif; ?>
+<div>
+    <a href="http://blog.local/subscribe/remove?email=<?php echo $email->getEmail()?>">Unsubscribe</a>
+</div>
 

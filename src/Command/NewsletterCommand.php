@@ -42,7 +42,7 @@ class SendMailCommand implements CommandInterface
         $popularPosts = BlogRepository::getPopularity();
 
         ob_start();
-        $response = new Response('command\newsletter.php', [
+        $response = new Response('newsletter\newsletter.php', [
           'posts' => $popularPosts,
         ]);
         $response->render();
