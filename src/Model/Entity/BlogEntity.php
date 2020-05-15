@@ -44,6 +44,7 @@ class BlogEntity
     /** @var int */
     private $views;
 
+    /** @var int */
     private $commentNr;
 
     /**

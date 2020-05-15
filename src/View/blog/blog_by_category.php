@@ -60,14 +60,14 @@ use Blog\Model\Entity\BlogEntity; ?>
         <label><b>Current Page: <?= $currentPage . '/' . $totalPages ?></b></label><br />
         <label>
             <?php if ($currentPage > 1): ?>
-                <a href="<?= $url .  '&page=' . ($currentPage - 1)?>">&lt;</a>
+                <a href="<?= $url . '?id=' . $category->getId() .  '&page=' . ($currentPage - 1)?>">&lt;</a>
             <?php endif ?>
                 <?php foreach ($pagination as $pag): ?>
                     <?php if ($currentPage !== $pag): ?>
                         <?php if ($pag === '...'): ?>
                             <span><?=$pag?></span>
                         <?php else: ?>
-                            <a href="<?= $url .  '&page=' . $pag ?>"><?=$pag?></a>
+                            <a href="<?= $url . '?id=' . $category->getId() .  '&page=' . $pag ?>"><?=$pag?></a>
                         <?php endif ?>
                     <?php endif ?>
                     <?php if ($currentPage === $pag): ?>
@@ -75,7 +75,7 @@ use Blog\Model\Entity\BlogEntity; ?>
                     <?php endif ?>
                 <?php endforeach; ?>
                 <?php if ($currentPage < $totalPages): ?>
-                    <a href="<?=$url .  '&page=' . ($currentPage + 1)?>">&gt;</a>
+                    <a href="<?=$url . '?id=' . $category->getId() . '&page=' . ($currentPage + 1)?>">&gt;</a>
                 <?php endif ?>
         </label>
     </div>

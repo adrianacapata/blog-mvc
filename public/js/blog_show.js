@@ -91,4 +91,36 @@ $(document).ready(function () {
            }
        })
     });
+
+    //search archived posts
+    /*
+    $('#search').on('submit', function (event) {
+       event.preventDefault();
+        $('.search-group').empty();
+
+        let word = $(this).serialize();
+
+       $.ajax({
+          url: '/archive/search',
+          type: 'post',
+          data: word,
+          dataType: 'json',
+
+          success: function (response) {
+              //results found
+              $('.search-group').load(response.redirect);
+              // response.posts.forEach( function (post){
+              //     $('.search-group').append('<div class="list-group-item">' + post.title + '</div>');
+              // }
+              // );
+
+
+          },
+          error: function (request) {
+              //no results
+          }
+       })
+    });
+
+     */
 });

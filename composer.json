@@ -5,7 +5,9 @@
     "require": {
       "ext-pdo": "*",
         "twbs/bootstrap": "3.4.1",
-      "ext-json": "*"
+      "ext-json": "*",
+        "swiftmailer/swiftmailer": "^6.2",
+      "ext-mysql": "*"
     },
 
     "autoload": {

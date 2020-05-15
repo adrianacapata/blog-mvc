@@ -61,8 +61,10 @@ class Container
           return self::$request = Request::getInstance();
     }
 
-    //TODO singleton (as dbconn)
-    public static function getMailer()
+    /**
+     * @return Mailer
+     */
+    public static function getMailer(): Mailer
     {
         if (self::$mailer === null) {
             $parameters = self::getParameters('swift_mailer');
@@ -71,8 +73,9 @@ class Container
                 ->setUsername($parameters['sender_address'])
                 ->setPassword($parameters['password']);
 
-            self::$mailer = new \Swift_Mailer($smtpTransport);
+            self::$mailer = new Mailer(new \Swift_Mailer($smtpTransport));
         }
-        return new Mailer(self::$mailer);
+
+        return self::$mailer;
     }
 }

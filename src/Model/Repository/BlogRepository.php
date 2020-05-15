@@ -141,11 +141,15 @@ class BlogRepository
         return $blogs;
     }
 
+    /**
+     * @param int $categoryId
+     * @return int
+     */
     public static function countBlogsByCategoryId(int $categoryId): int
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
-            SELECT count(*)
+            SELECT COUNT(*)
             FROM `blog`
             WHERE category_id = :categoryId AND status = :published
           '
@@ -205,14 +209,18 @@ class BlogRepository
     /**
      * @return ArrayObject|BlogEntity[]
      */
-    public static function getArchivedBlogs(): ArrayObject
+    public static function getArchivedBlogs(int $limit, int $offset): ArrayObject
     {
         $conn = Container::getDbConnection();
-        $stmt = $conn->query('
+        $stmt = $conn->prepare('
             SELECT * FROM `blog`
             WHERE `status` = :archived
+            LIMIT :offset, :limit
         ');
-        $stmt->bindValue('archived', BlogEntity::STATUS_ARCHIVED);
+        $stmt->bindValue(':archived', BlogEntity::STATUS_ARCHIVED, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
         $blogData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $blogs = new ArrayObject();
@@ -222,4 +230,68 @@ class BlogRepository
 
         return $blogs;
     }
+
+    public static function getArchivedBlogsCount()
+    {
+        $conn = Container::getDbConnection();
+        $stmt = $conn->prepare('
+            SELECT COUNT(*) FROM `blog`
+            WHERE `status` = :archived
+        ');
+        $stmt->bindValue(':archived', BlogEntity::STATUS_ARCHIVED, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchColumn();
+    }
+
+    /**
+     * @param string $word
+     * @param int $limit
+     * @param int $offset
+     * @return ArrayObject
+     */
+    public static function searchResult(string $word, int $limit, int $offset): ArrayObject
+    {
+        $conn = Container::getDbConnection();
+        $stmt = $conn->prepare('
+            SELECT * FROM `blog`
+            WHERE `title` LIKE :word 
+              OR `author_name` LIKE :word
+              OR `content` LIKE :word
+            LIMIT :offset, :limit
+        ');
+        $stmt->bindValue(':word', "%$word%", PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $blogData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $blogs = new ArrayObject();
+        foreach ($blogData as $blog) {
+            $blogs->append(self::createBlogEntityFromData($blog));
+
+        }
+
+        return $blogs;
+    }
+
+    /**
+     * @param string $word
+     * @return int
+     */
+    public static function searchCount(string $word): int
+    {
+        $conn = Container::getDbConnection();
+        $stmt = $conn->prepare('
+            SELECT COUNT(*) FROM `blog`
+            WHERE `title` LIKE :word 
+              OR `author_name` LIKE :word
+              OR `content` LIKE :word
+        ');
+        $stmt->bindValue(':word', "%$word%", PDO::PARAM_STR);
+        $stmt->execute();
+
+        return $stmt->fetchColumn();
+    }
+
 }

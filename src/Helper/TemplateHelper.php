@@ -59,8 +59,7 @@ class TemplateHelper
 
         $controllerName = $request->getControllerName();
         $actionName = $request->getActionName();
-        $id = $request->getQueryParameters()['id'];
 
-        return '/' . $controllerName . '/' . $actionName . '?id=' . $id;
+        return '/' . $controllerName . '/' . $actionName;
     }
 }

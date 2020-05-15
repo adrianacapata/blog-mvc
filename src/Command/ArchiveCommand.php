@@ -6,7 +6,6 @@ use Blog\Model\Repository\BlogRepository;
 
 class ArchiveCommand implements CommandInterface
 {
-    //TODO show how many posts were archived
     public function execute(): void
     {
         $archivePosts = BlogRepository::archiveBlogs();
