@@ -10,6 +10,7 @@ class BlogEntity
     public const STATUS_PUBLISHED = 1;
     public const STATUS_ARCHIVED = 2;
     public const STATUS_DISABLE = 3;
+    public const NR_OF_POSTS_ON_PAGE = 2;
 
     /** @var int */
     private $id;

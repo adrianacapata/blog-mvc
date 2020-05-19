@@ -47,9 +47,14 @@ class Request
         return self::$instance;
     }
 
+    public function getBaseUrl()
+    {
+        return parse_url($this->url, PHP_URL_PATH);
+    }
     /**
      * @return mixed
      */
+    //base url
     public function getUrl()
     {
         return $this->url;
