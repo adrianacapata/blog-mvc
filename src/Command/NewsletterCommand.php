@@ -4,15 +4,11 @@ namespace Blog\Command;
 
 use ArrayObject;
 use Blog\DependencyInjection\Container;
-use Blog\DependencyInjection\Mailer;
 use Blog\Model\Entity\BlogEntity;
 use Blog\Model\Entity\NewsletterEntity;
 use Blog\Model\Repository\BlogRepository;
 use Blog\Model\Repository\NewsletterRepository;
 use Blog\Router\Exception\InvalidTemplateException;
-use Swift_Mailer;
-use Swift_Message;
-use Swift_SmtpTransport;
 
 class NewsletterCommand implements CommandInterface
 {

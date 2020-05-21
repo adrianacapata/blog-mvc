@@ -250,12 +250,12 @@ class BlogRepository
     }
 
     /**
-     * @param string $word
+     * @param string|null $word
      * @param int $limit
      * @param int $offset
      * @return ArrayObject
      */
-    public static function searchResult(int $limit, int $offset, ?string $word = ''): ArrayObject
+    public static function searchResult(int $limit, int $offset, ?string $word): ArrayObject
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -286,9 +286,9 @@ class BlogRepository
 
     /**
      * @param string|null $word
-     * @return int
+     * @return bool
      */
-    public static function searchCount(?string $word = ''): int
+    public static function searchCount(?string $word): bool
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -306,5 +306,4 @@ class BlogRepository
 
         return $stmt->fetchColumn();
     }
-
 }

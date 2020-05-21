@@ -7,6 +7,7 @@ use Blog\Model\Repository\NewsletterRepository;
 use Blog\Router\Response\JSONResponse;
 use Blog\Router\Response\Response;
 use Blog\Validator\SubscribeValidator;
+use Blog\Validator\UnsubscribeValidator;
 use Exception;
 
 class NewsletterController
@@ -27,11 +28,11 @@ class NewsletterController
         }
 
         $validator = new SubscribeValidator(Container::getRequest());
-        $blogSubscribeEntity = $validator->validate();
+        $newsletterEntity = $validator->validate();
 
-        if ($blogSubscribeEntity) {
+        if ($newsletterEntity) {
             try {
-                NewsletterRepository::addSubscriber($blogSubscribeEntity);
+                NewsletterRepository::addSubscriber($newsletterEntity);
 
                 return new JSONResponse();
             } catch (Exception $e) {
@@ -49,30 +50,19 @@ class NewsletterController
     }
 
     //TODO create a validation class for email - refactor this action
-    public function unsubscribeAction()
+    public function unsubscribeAction(): Response
     {
-        $request = Container::getRequest();
-        $email = $request->getQueryParameters()['email'] ?? null;
+        $validator = new UnsubscribeValidator(Container::getRequest());
+        $newsletterEntity = $validator->validate();
 
-        if (!$email) {
-            return new Response(
-                'pageNotFound.php',
-                [
-                    'message' => 'email not provided'
-                ],
-                Response::HTTP_STATUS_NOT_FOUND
-            );
-        }
-        //email ok
-        $newsletterEmail = filter_var($email, FILTER_VALIDATE_EMAIL);
-        if ($newsletterEmail) {
+        if ($newsletterEntity) {
             //treat validation case
-            $newsletter = NewsletterRepository::findOneByEmail($newsletterEmail);
+            $newsletter = NewsletterRepository::findOneByEmail($newsletterEntity->getEmail());
             if (!$newsletter) {
                 return new Response(
                     'pageNotFound.php',
                     [
-                        'message' => 'email does not exist'
+                        'message' => 'email does not exist in database'
                     ],
                     Response::HTTP_STATUS_NOT_FOUND
                 );
@@ -82,11 +72,12 @@ class NewsletterController
 
             return new Response('/subscription/unsubscribe.php');
         }
+        $errors = $validator->getValidationErrors();
 
         return new Response(
             'pageNotFound.php',
             [
-                'message' => 'email is not valid'
+                'message' => $errors,
             ],
             Response::HTTP_STATUS_BAD_REQUEST
         );

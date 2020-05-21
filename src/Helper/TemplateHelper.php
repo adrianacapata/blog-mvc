@@ -3,6 +3,7 @@
 namespace Blog\Helper;
 
 use Blog\DependencyInjection\Container;
+use Blog\Model\Repository\BlogRepository;
 
 class TemplateHelper
 {
@@ -61,5 +62,30 @@ class TemplateHelper
         $actionName = $request->getActionName();
 
         return '/' . $controllerName . '/' . $actionName;
+    }
+
+    public static function getUrl($baseUrl, $searchedWord, $page)
+    {
+        return $baseUrl . '?' . http_build_query([
+            'q' => $searchedWord,
+            'page' => $page
+            ]);
+    }
+
+    /**
+     * @param string|null $searchedWord
+     * @param int $limit
+     * @return bool|int
+     */
+    public static function getTotalPagesForSearch(?string $searchedWord, int $limit)
+    {
+        $cache = Container::getCache();
+        if ($cache->get('count')) {
+            $totalPages = (int)ceil($cache->get('count') / $limit);
+        } else {
+            $totalPages = $cache->add('count',(int)ceil(BlogRepository::searchCount($searchedWord) / $limit));
+        }
+
+        return $totalPages;
     }
 }

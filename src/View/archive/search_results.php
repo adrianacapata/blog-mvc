@@ -26,21 +26,20 @@ use Blog\Model\Repository\BlogRepository;
 
 <body class="container-fluid">
     <div class="blog-header">
-        <div class="pull-left blog-header-title">You searched for: <?=$searchedWord?></div>
+        <div class="pull-left blog-header-title">You searched for: <?=$searchedWord?>
+<!--            --><?php //if (BlogRepository::searchCount($searchedWord) < 1):?>
+<!--                <br /> No results found-->
+<!--            --><?php //endif;?>
+        </div>
         <div class="pull-right search">
-            <?php if ($messages): ?>
-                <?= $messages?>
-            <?php endif;?>
-            <form action="/archive/searchResult" method="get" id="search">
+            <form action="/archive/list" method="get" id="search">
                 <input type="text" id="searched_word" name="q" />
                 <button type="submit" id="submit" class="btn btn-info">Search</button>
             </form>
         </div>
     </div>
     <div class="list-group results">
-        <?php if (BlogRepository::searchCount($searchedWord) < 1): ?>
-            <p>No results found</p>
-        <?php endif;?>
+
         <?php foreach ($posts as $post): ?>
             <div class="list-group-item"><?=$post->getTitle()?>
                 <div><?=$post->getAuthorName()?></div>
@@ -48,28 +47,32 @@ use Blog\Model\Repository\BlogRepository;
             </div>
         <?php endforeach; ?>
     </div>
-    <div class="pagination">
-        <label><b>Current Page: <?= $currentPage . '/' . $totalPages ?></b></label><br />
-        <label>
-            <?php if ($currentPage > 1): ?>
-                <a href="<?= $url . '?q=' . $searchedWord.  '&page=' . ($currentPage - 1)?>">&lt;</a>
-            <?php endif ?>
-            <?php foreach ($pagination as $pag): ?>
-                <?php if ($currentPage !== $pag): ?>
-                    <?php if ($pag === '...'): ?>
-                        <span><?=$pag?></span>
-                    <?php else: ?>
-                        <a href="<?= $url . '?q=' . $searchedWord . '&page=' . $pag ?>"><?=$pag?></a>
+    <?php if (isset($message)): ?>
+        <?= $message?>
+    <?php else:?>
+        <div class="pagination">
+            <label><b>Current Page: <?= $currentPage . '/' . $totalPages ?></b></label><br />
+            <label>
+                <?php if ($currentPage > 1): ?>
+                    <a href="<?= $url . '?q=' . $searchedWord.  '&page=' . ($currentPage - 1)?>">&lt;</a>
+                <?php endif ?>
+                <?php foreach ($pagination as $pag): ?>
+                    <?php if ($currentPage !== $pag): ?>
+                        <?php if ($pag === '...'): ?>
+                            <span><?=$pag?></span>
+                        <?php else: ?>
+                            <a href="<?= $url . '?q=' . $searchedWord . '&page=' . $pag ?>"><?=$pag?></a>
+                        <?php endif ?>
                     <?php endif ?>
+                    <?php if ($currentPage === $pag): ?>
+                        <span style="color: red;"><?=$pag?></span>
+                    <?php endif ?>
+                <?php endforeach; ?>
+                <?php if ($currentPage < $totalPages): ?>
+                    <a href="<?=$url . '?q=' . $searchedWord . '&page=' . ($currentPage + 1)?>">&gt;</a>
                 <?php endif ?>
-                <?php if ($currentPage === $pag): ?>
-                    <span style="color: red;"><?=$pag?></span>
-                <?php endif ?>
-            <?php endforeach; ?>
-            <?php if ($currentPage < $totalPages): ?>
-                <a href="<?=$url . '?q=' . $searchedWord . '&page=' . ($currentPage + 1)?>">&gt;</a>
-            <?php endif ?>
-        </label>
-    </div>
+            </label>
+        </div>
+    <?php endif;?>
 </body>
 </html>

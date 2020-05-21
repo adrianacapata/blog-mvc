@@ -11,6 +11,10 @@ use Blog\Validator\SearchValidator;
 
 class ArchiveController
 {
+    /**
+     *
+     * @return Response
+     */
     public function listAction(): Response
     {
         $request = Container::getRequest();
@@ -31,11 +35,9 @@ class ArchiveController
         $errors = '';
         //word is not valid
         if (!$searchedWord) {
-            $searchedWord = '';
             $errors = $validator->getValidationErrors();
             $status = $errors ? Response::HTTP_STATUS_BAD_REQUEST : Response::HTTP_STATUS_OK;
         }
-
         $totalPages = (int)ceil(BlogRepository::searchCount($searchedWord) / $limit);
 
         //search input true
@@ -53,4 +55,5 @@ class ArchiveController
             $status
         );
     }
+
 }
