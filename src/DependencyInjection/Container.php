@@ -3,6 +3,7 @@
 namespace Blog\DependencyInjection;
 
 use InvalidArgumentException;
+use Memcache;
 use PDO;
 use Blog\Router\Request;
 use Swift_SmtpTransport;
@@ -17,6 +18,8 @@ class Container
     private static $request;
     /** @var Swift_SmtpTransport */
     private static $mailer;
+    /** @var Memcache */
+    private static $cache;
     /**
      * @param string|null $name
      * @return mixed
@@ -61,9 +64,6 @@ class Container
           return self::$request = Request::getInstance();
     }
 
-    /**
-     * @return Mailer
-     */
     public static function getMailer(): Mailer
     {
         if (self::$mailer === null) {
@@ -77,5 +77,16 @@ class Container
         }
 
         return self::$mailer;
+    }
+
+    public static function getCache(): Memcache
+    {
+        if (self::$cache === null) {
+            $parameters = self::getParameters('memcached');
+
+            self::$cache = (new Memcache())->connect($parameters['host'], $parameters['port']);
+        }
+
+        return self::$cache;
     }
 }
