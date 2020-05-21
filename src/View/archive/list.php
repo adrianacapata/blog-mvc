@@ -1,6 +1,8 @@
 <?php
 /**
  * @var $posts BlogEntity[]
+ * @var string|null $searchedWord
+ * @var string|null $errorMessages
  * @var int $currentPage
  * @var int $totalPages
  * @var $pagination[]
@@ -23,9 +25,19 @@ use Blog\Model\Entity\BlogEntity;
 </head>
     <body class="container-fluid">
         <div class="blog-header">
-            <div class="pull-left blog-header-title">Arhived posts:</div>
+            <div class="pull-left blog-header-title">
+                <?php if ($errorMessages):?>
+                    <?= $errorMessages['searched_word']?>
+                <?php else:?>
+                    <?php if ($searchedWord): ?>
+                        You searched for: <?= $searchedWord?>
+                    <?php else:?>
+                        Arhived posts:
+                    <?php endif;?>
+                <?php endif;?>
+            </div>
             <div class="pull-right search">
-                <form action="/archive/searchResult" method="get" id="search">
+                <form action="/archive/list" method="get" id="search">
                     <input type="text" id="searched_word" name="q" />
                     <button type="submit" id="submit" class="btn btn-info">Search</button>
                 </form>
@@ -45,14 +57,14 @@ use Blog\Model\Entity\BlogEntity;
             <label><b>Current Page: <?= $currentPage . '/' . $totalPages ?></b></label><br />
             <label>
                 <?php if ($currentPage > 1): ?>
-                    <a href="<?= $url .  '?&page=' . ($currentPage - 1)?>">&lt;</a>
+                    <a href="<?= $url . '&page=' . ($currentPage - 1)?>">&lt;</a>
                 <?php endif ?>
                 <?php foreach ($pagination as $pag): ?>
                     <?php if ($currentPage !== $pag): ?>
                         <?php if ($pag === '...'): ?>
                             <span><?=$pag?></span>
                         <?php else: ?>
-                            <a href="<?= $url .  '?&page=' . $pag ?>"><?=$pag?></a>
+                            <a href="<?= $url . '&page=' . $pag ?>"><?=$pag?></a>
                         <?php endif ?>
                     <?php endif ?>
                     <?php if ($currentPage === $pag): ?>
@@ -60,7 +72,7 @@ use Blog\Model\Entity\BlogEntity;
                     <?php endif ?>
                 <?php endforeach; ?>
                 <?php if ($currentPage < $totalPages): ?>
-                    <a href="<?=$url .  '?&page=' . ($currentPage + 1)?>">&gt;</a>
+                    <a href="<?=$url . '&page=' . ($currentPage + 1)?>">&gt;</a>
                 <?php endif ?>
             </label>
         </div>

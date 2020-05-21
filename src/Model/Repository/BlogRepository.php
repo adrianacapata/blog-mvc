@@ -207,6 +207,8 @@ class BlogRepository
     }
 
     /**
+     * @param int $limit
+     * @param int $offset
      * @return ArrayObject|BlogEntity[]
      */
     public static function getArchivedBlogs(int $limit, int $offset): ArrayObject
@@ -231,7 +233,10 @@ class BlogRepository
         return $blogs;
     }
 
-    public static function getArchivedBlogsCount()
+    /**
+     * @return int
+     */
+    public static function getArchivedBlogsCount(): int
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -250,16 +255,20 @@ class BlogRepository
      * @param int $offset
      * @return ArrayObject
      */
-    public static function searchResult(string $word, int $limit, int $offset): ArrayObject
+    public static function searchResult(int $limit, int $offset, ?string $word = ''): ArrayObject
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
             SELECT * FROM `blog`
-            WHERE `title` LIKE :word 
-              OR `author_name` LIKE :word
-              OR `content` LIKE :word
+            WHERE `status` = :archived 
+              AND (
+                  `title` LIKE :word
+                  OR `author_name` LIKE :word
+                  OR `content` LIKE :word
+                  )
             LIMIT :offset, :limit
         ');
+        $stmt->bindValue(':archived', BlogEntity::STATUS_ARCHIVED, PDO::PARAM_INT);
         $stmt->bindValue(':word', "%$word%", PDO::PARAM_STR);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -276,18 +285,22 @@ class BlogRepository
     }
 
     /**
-     * @param string $word
+     * @param string|null $word
      * @return int
      */
-    public static function searchCount(string $word): int
+    public static function searchCount(?string $word = ''): int
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
             SELECT COUNT(*) FROM `blog`
-            WHERE `title` LIKE :word 
-              OR `author_name` LIKE :word
-              OR `content` LIKE :word
+            WHERE `status` = :archived 
+              AND (
+                  `title` LIKE :word 
+                  OR `author_name` LIKE :word
+                  OR `content` LIKE :word
+                  )
         ');
+        $stmt->bindValue(':archived', BlogEntity::STATUS_ARCHIVED, PDO::PARAM_INT);
         $stmt->bindValue(':word', "%$word%", PDO::PARAM_STR);
         $stmt->execute();
 
