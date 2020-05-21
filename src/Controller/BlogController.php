@@ -3,6 +3,7 @@
 namespace Blog\Controller;
 
 use Blog\DependencyInjection\Container;
+use Blog\Model\Entity\CategoryEntity;
 use Blog\Model\Repository\BlogRepository;
 use Blog\Model\Repository\CategoryRepository;
 use Blog\Model\Repository\CommentRepository;
@@ -19,8 +20,18 @@ class BlogController
      */
     public function indexAction(): Response
     {
+        $cache = Container::getCache();
+
+        $categoryTree = $cache->get(CategoryEntity::CATEGORY_TREE_FROM_CACHE);
+
+        //check if already exists in cache - if not add it to cache and retrieve from there
+        if (!$categoryTree) {
+            $categoryTree = CategoryRepository::getCategoryTree();
+            $cache->add(CategoryEntity::CATEGORY_TREE_FROM_CACHE, $categoryTree);
+        }
+
         return new Response('category\show.php', [
-            'categoriesTree' => CategoryRepository::getCategoryTree(),
+            'categoryTree' => $categoryTree,
             'popularBlogs' => BlogRepository::getPopularity(),
         ]);
     }

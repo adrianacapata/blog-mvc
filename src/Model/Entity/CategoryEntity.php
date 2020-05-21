@@ -8,6 +8,9 @@ namespace Blog\Model\Entity;
  */
 class CategoryEntity
 {
+
+    public const CATEGORY_TREE_FROM_CACHE = 'categoryTree';
+
     /** @var int */
     private $id;
 
