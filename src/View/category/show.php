@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @var \Blog\Model\Entity\BlogEntity[] $categoriesTree
+ * @var \Blog\Model\Entity\BlogEntity[] $categoryTree
  * @var \Blog\Model\Entity\BlogEntity[] $popularBlogs
  */
 ?>
@@ -25,7 +25,7 @@
             <h1>Categories and blogs</h1>
         </div>
         <div>
-            <?php foreach ($categoriesTree as $category): ?>
+            <?php foreach ($categoryTree as $category): ?>
                 <div>
                     <?php
                         if ($category['level'] > 1) {

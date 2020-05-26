@@ -20,20 +20,15 @@ class BlogController
      */
     public function indexAction(): Response
     {
-        $cache = Container::getCache();
 
-        $categoryTree = $cache->get(CategoryEntity::CATEGORY_TREE_FROM_CACHE);
-
-        //check if already exists in cache - if not add it to cache and retrieve from there
-        if (!$categoryTree) {
-            $categoryTree = CategoryRepository::getCategoryTree();
-            $cache->add(CategoryEntity::CATEGORY_TREE_FROM_CACHE, $categoryTree);
-        }
+        //TODO constant goes to repository
+            $categoryRepo = Container::getRepository(CategoryRepository::class);
 
         return new Response('category\show.php', [
-            'categoryTree' => $categoryTree,
+            'categoryTree' => CategoryRepository::getCategoryTree(),
             'popularBlogs' => BlogRepository::getPopularity(),
         ]);
+
     }
 
     /**

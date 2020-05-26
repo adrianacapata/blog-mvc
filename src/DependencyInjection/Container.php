@@ -2,6 +2,11 @@
 
 namespace Blog\DependencyInjection;
 
+use Blog\Logger\DbLogger;
+use Blog\Logger\FileLogger;
+use Blog\Logger\Logger;
+use Blog\Logger\LoggerInterface;
+use Blog\Model\EntityManager;
 use InvalidArgumentException;
 use Memcache;
 use PDO;
@@ -20,6 +25,12 @@ class Container
     private static $mailer;
     /** @var Memcache */
     private static $cache;
+    /** @var LoggerInterface */
+    private static $logger;
+    /** @var EntityManager */
+    private static $entityManager;
+    private const REPOSITORY_NAMESPACE = 'Blog\\Model\\Repository';
+
     /**
      * @param string|null $name
      * @return mixed
@@ -79,14 +90,42 @@ class Container
         return self::$mailer;
     }
 
-    public static function getCache(): Memcache
+    //getLogger - get from params type (file or db) - return loggerInterface
+    public static function getLogger(): LoggerInterface
+    {
+        if (self::$logger === null) {
+            $parameters = self::getParameters('logger');
+            self::$logger = new Logger(new FileLogger($parameters['path']));
+        }
+
+        return self::$logger;
+    }
+
+    public static function getCache()
     {
         if (self::$cache === null) {
             $parameters = self::getParameters('memcached');
 
-            self::$cache = (new Memcache())->connect($parameters['host'], $parameters['port']);
+            self::$cache = (new Cache(new Memcache(), self::getLogger()));
+            self::$cache->connect($parameters['host'], $parameters['port']);
         }
 
         return self::$cache;
     }
+
+    public static function getEntityManager(): EntityManager
+    {
+        if (self::$entityManager === null) {
+            self::$entityManager = new EntityManager(self::getCache(), self::getDbConnection());
+        }
+
+        return self::$entityManager;
+    }
+
+    public static function getRepository($repository)
+    {
+        return new $repository();
+    }
+    //TODO get repository - array with class names as keys
+    //a nea cachedRepo class -
 }

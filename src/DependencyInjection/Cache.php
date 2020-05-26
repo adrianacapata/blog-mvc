@@ -2,9 +2,9 @@
 
 namespace Blog\DependencyInjection;
 
+use Blog\Logger\FileLogger;
+use Blog\Logger\LoggerInterface;
 use Memcache;
-
-//delete this file and class
 
 class Cache
 {
@@ -13,7 +13,7 @@ class Cache
      */
     private $cache;
 
-    public function __construct(Memcache $cache)
+    public function __construct(Memcache $cache, LoggerInterface $logger)
     {
         $this->cache = $cache;
     }
@@ -25,6 +25,9 @@ class Cache
      */
     public function add(string $key, $var): bool
     {
+        $logger = Container::getLogger();
+        $logger->log($key);
+
         return $this->cache->add($key, $var);
     }
 

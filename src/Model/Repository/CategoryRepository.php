@@ -9,7 +9,6 @@ use PDO;
 
 class CategoryRepository
 {
-
     /**
      * @return ArrayObject|CategoryEntity[]
      */
@@ -45,8 +44,11 @@ class CategoryRepository
      *   ]
      * ]
      */
+    //TODO Manager - repository container
+    //TODO remove from controller the cache part - activate from params
     public static function getCategoryTree(): array
     {
+        $cacheRepository = new CacheRepository(Container::getCache());
         $conn = Container::getDbConnection();
         $stmt = $conn->query('
             SELECT c.name, COUNT(p.name) `level`,  GROUP_CONCAT(p.name), (SELECT COUNT(id) FROM blog WHERE category_id = c.id) as posts
@@ -57,7 +59,7 @@ class CategoryRepository
         ');
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $cacheRepository->cachedQuery('bullshit', $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
 
