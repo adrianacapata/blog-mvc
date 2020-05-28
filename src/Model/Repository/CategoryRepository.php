@@ -9,6 +9,8 @@ use PDO;
 
 class CategoryRepository
 {
+    public const CATEGORY_TREE_FROM_CACHE = 'categoryTree';
+
     /**
      * @return ArrayObject|CategoryEntity[]
      */
@@ -46,7 +48,7 @@ class CategoryRepository
      */
     //TODO Manager - repository container
     //TODO remove from controller the cache part - activate from params
-    public static function getCategoryTree(): array
+    public static function getCategoryTree()
     {
         $cacheRepository = new CacheRepository(Container::getCache());
         $conn = Container::getDbConnection();
@@ -59,7 +61,7 @@ class CategoryRepository
         ');
         $stmt->execute();
 
-        return $cacheRepository->cachedQuery('bullshit', $stmt->fetchAll(PDO::FETCH_ASSOC));
+        return $cacheRepository->cachedQuery(self::CATEGORY_TREE_FROM_CACHE, $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
 

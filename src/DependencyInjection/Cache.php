@@ -12,10 +12,15 @@ class Cache
      * @var Memcache
      */
     private $cache;
+    /**
+     * @var LoggerInterface
+     */
+    private LoggerInterface $logger;
 
     public function __construct(Memcache $cache, LoggerInterface $logger)
     {
         $this->cache = $cache;
+        $this->logger = $logger;
     }
 
     /**
@@ -25,8 +30,7 @@ class Cache
      */
     public function add(string $key, $var): bool
     {
-        $logger = Container::getLogger();
-        $logger->log($key);
+        $this->logger->log($key);
 
         return $this->cache->add($key, $var);
     }

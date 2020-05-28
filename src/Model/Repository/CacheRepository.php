@@ -16,12 +16,13 @@ class CacheRepository
         $this->cache = $cache;
     }
 
-    public function cachedQuery($key, $query)
+    public function cachedQuery($key, $callback)
     {
         $check = $this->cache->get($key);
 
         if (!$check) {
-            $this->cache->add($key, $query);
+            $this->cache->add($key, $callback);
+            $check = $callback;
         }
 
         return $check;

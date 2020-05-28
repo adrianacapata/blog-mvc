@@ -36,7 +36,7 @@ class Container
     public static function getParameters(string $name = null)
     {
         if (self::$parameters === null) {
-            require_once __DIR__ . '/../../config/parameters.php';
+            require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'parameters.php';
             self::$parameters = $parameters;
         }
         
@@ -88,11 +88,21 @@ class Container
     }
 
     //getLogger - get from params type (file or db) - return loggerInterface
+    public static function getFileLogger(): LoggerInterface
+    {
+        if (self::$logger === null) {
+            $parameters = self::getParameters('logger');
+            self::$logger = new FileLogger($parameters['path']);
+        }
+
+        return self::$logger;
+    }
+
     public static function getLogger(): LoggerInterface
     {
         if (self::$logger === null) {
             $parameters = self::getParameters('logger');
-            self::$logger = new Logger(new FileLogger($parameters['path']));
+            self::$logger = new FileLogger($parameters['path']);
         }
 
         return self::$logger;
@@ -117,5 +127,4 @@ class Container
         return $repositories[$repository];
     }
     //TODO get repository - array with class names as keys
-    //a nea cachedRepo class -
 }

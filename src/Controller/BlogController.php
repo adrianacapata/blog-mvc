@@ -3,7 +3,6 @@
 namespace Blog\Controller;
 
 use Blog\DependencyInjection\Container;
-use Blog\Model\Entity\CategoryEntity;
 use Blog\Model\Repository\BlogRepository;
 use Blog\Model\Repository\CategoryRepository;
 use Blog\Model\Repository\CommentRepository;
@@ -22,11 +21,10 @@ class BlogController
     {
 
         //TODO constant goes to repository
-        $categoryRepo = Container::getRepository(CategoryRepository::class);
-        $categoryTree = $categoryRepo->getCategoryTree();
+        $categoryRepository = Container::getRepository(CategoryRepository::class);
 
-        return new Response('category\show.php', [
-            'categoryTree' => CategoryRepository::getCategoryTree(),
+        return new Response('category' . DIRECTORY_SEPARATOR . 'show.php', [
+            'categoryTree' => $categoryRepository->getCategoryTree(),
             'popularBlogs' => BlogRepository::getPopularity(),
         ]);
 
