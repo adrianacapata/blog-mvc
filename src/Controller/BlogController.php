@@ -22,7 +22,8 @@ class BlogController
     {
 
         //TODO constant goes to repository
-            $categoryRepo = Container::getRepository(CategoryRepository::class);
+        $categoryRepo = Container::getRepository(CategoryRepository::class);
+        $categoryTree = $categoryRepo->getCategoryTree();
 
         return new Response('category\show.php', [
             'categoryTree' => CategoryRepository::getCategoryTree(),

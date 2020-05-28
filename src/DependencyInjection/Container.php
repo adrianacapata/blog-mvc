@@ -27,9 +27,6 @@ class Container
     private static $cache;
     /** @var LoggerInterface */
     private static $logger;
-    /** @var EntityManager */
-    private static $entityManager;
-    private const REPOSITORY_NAMESPACE = 'Blog\\Model\\Repository';
 
     /**
      * @param string|null $name
@@ -113,18 +110,11 @@ class Container
         return self::$cache;
     }
 
-    public static function getEntityManager(): EntityManager
-    {
-        if (self::$entityManager === null) {
-            self::$entityManager = new EntityManager(self::getCache(), self::getDbConnection());
-        }
-
-        return self::$entityManager;
-    }
-
     public static function getRepository($repository)
     {
-        return new $repository();
+        $repositories[$repository] = new $repository();
+
+        return $repositories[$repository];
     }
     //TODO get repository - array with class names as keys
     //a nea cachedRepo class -
