@@ -7,7 +7,7 @@ use Blog\DependencyInjection\Container;
 use Blog\Model\Entity\CategoryEntity;
 use PDO;
 
-class CategoryRepository
+class CategoryRepository extends AbstractCacheRepository
 {
     public const CATEGORY_TREE_FROM_CACHE = 'categoryTree';
 
@@ -46,24 +46,27 @@ class CategoryRepository
      *   ]
      * ]
      */
-    //TODO Manager - repository container
-    //TODO remove from controller the cache part - activate from params
-    public static function getCategoryTree()
+    public function getCategoryTree(): array
     {
-        $cacheRepository = new CacheRepository(Container::getCache());
-        $conn = Container::getDbConnection();
-        $stmt = $conn->query('
-            SELECT c.name, COUNT(p.name) `level`,  GROUP_CONCAT(p.name), (SELECT COUNT(id) FROM blog WHERE category_id = c.id) as posts
-            FROM category c
-            INNER JOIN category p ON c.tree_left >= p.tree_left AND c.tree_right <= p.tree_right
-            GROUP BY c.tree_left
-            ORDER BY c.tree_left
-        ');
-        $stmt->execute();
-
-        return $cacheRepository->cachedQuery(self::CATEGORY_TREE_FROM_CACHE, $stmt->fetchAll(PDO::FETCH_ASSOC));
+        return $this->cachedQuery(self::CATEGORY_TREE_FROM_CACHE, $this->getCategoryTreeQuery());
     }
 
+    private function getCategoryTreeQuery(): callable
+    {
+        return static function () {
+            $conn = Container::getDbConnection();
+            $stmt = $conn->query('
+                SELECT c.name, COUNT(p.name) `level`,  GROUP_CONCAT(p.name), (SELECT COUNT(id) FROM blog WHERE category_id = c.id) as posts
+                FROM category c
+                INNER JOIN category p ON c.tree_left >= p.tree_left AND c.tree_right <= p.tree_right
+                GROUP BY c.tree_left
+                ORDER BY c.tree_left
+            ');
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        };
+    }
 
     /**
      * Will return a single Category entity from db by $id

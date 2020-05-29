@@ -13,25 +13,18 @@ use Exception;
 
 class BlogController
 {
-
-    /**
-     * @return Response
-     */
     public function indexAction(): Response
     {
-
-        //TODO constant goes to repository
-        $categoryRepository = Container::getRepository(CategoryRepository::class);
+        /** @var CategoryRepository $repository */
+        $repository = Container::getRepository(CategoryRepository::class);
 
         return new Response('category' . DIRECTORY_SEPARATOR . 'show.php', [
-            'categoryTree' => $categoryRepository->getCategoryTree(),
+            'categoryTree' => $repository->getCategoryTree(),
             'popularBlogs' => BlogRepository::getPopularity(),
         ]);
-
     }
 
     /**
-     * @return Response
      * @throws HTTPNotFoundException
      */
     public function detailAction(): Response
@@ -54,7 +47,7 @@ class BlogController
         ]);
     }
 
-    public function likeAction()
+    public function likeAction(): JSONResponse
     {
         $request = Container::getRequest();
         $blogId = $request->getQueryParameters()['blog_id'];
@@ -70,7 +63,7 @@ class BlogController
         ]);
     }
 
-    public function dislikeAction()
+    public function dislikeAction(): JSONResponse
     {
         $request = Container::getRequest();
         $blogId = $request->getQueryParameters()['blog_id'];

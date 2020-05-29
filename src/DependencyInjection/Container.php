@@ -88,21 +88,15 @@ class Container
     }
 
     //getLogger - get from params type (file or db) - return loggerInterface
-    public static function getFileLogger(): LoggerInterface
-    {
-        if (self::$logger === null) {
-            $parameters = self::getParameters('logger');
-            self::$logger = new FileLogger($parameters['path']);
-        }
-
-        return self::$logger;
-    }
-
     public static function getLogger(): LoggerInterface
     {
         if (self::$logger === null) {
             $parameters = self::getParameters('logger');
-            self::$logger = new FileLogger($parameters['path']);
+            if ($parameters['type'] === 'file') {
+                self::$logger = new FileLogger($parameters['path']);
+            } else {
+                self::$logger = new DbLogger();
+            }
         }
 
         return self::$logger;
@@ -120,11 +114,15 @@ class Container
         return self::$cache;
     }
 
+    /**
+     * @param $repository
+     * @return mixed
+     */
     public static function getRepository($repository)
     {
-        $repositories[$repository] = new $repository();
+        $repositories[$repository] = new $repository(self::getCache());
 
         return $repositories[$repository];
     }
-    //TODO get repository - array with class names as keys
+
 }
