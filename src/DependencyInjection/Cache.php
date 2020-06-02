@@ -2,7 +2,6 @@
 
 namespace Blog\DependencyInjection;
 
-use Blog\Logger\FileLogger;
 use Blog\Logger\LoggerInterface;
 use Memcache;
 
@@ -15,7 +14,7 @@ class Cache
     /**
      * @var LoggerInterface
      */
-    private LoggerInterface $logger;
+    private $logger;
 
     public function __construct(Memcache $cache, LoggerInterface $logger)
     {

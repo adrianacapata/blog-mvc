@@ -10,11 +10,8 @@ class CommentRepository
 {
     /**
      * Returns a CommentEntity object from an array
-     *
-     * @param array $commentData
-     * @return CommentEntity
      */
-    private static function createCommentEntityFromData(array $commentData): CommentEntity
+    private function createCommentEntityFromData(array $commentData): CommentEntity
     {
         $commentEntity = new CommentEntity();
         $commentEntity->setId($commentData['id']);
@@ -27,13 +24,7 @@ class CommentRepository
         return $commentEntity;
     }
 
-    /**
-     * Returns all comments for a Blog id
-     *
-     * @param int $blogId
-     * @return CommentEntity[]
-     */
-    public static function getCommentsByBlogId(int $blogId): array
+    public function getCommentsByBlogId(int $blogId): array
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -49,17 +40,12 @@ class CommentRepository
 
         $comments = [];
         foreach ($commentsData as $commentData) {
-            $comments[] = self::createCommentEntityFromData($commentData);
+            $comments[] = $this->createCommentEntityFromData($commentData);
         }
         return $comments;
     }
 
-    /**
-     * Inserts a comment entry
-     *
-     * @param CommentEntity $commentEntity
-     */
-    public static function addCommentToBlogId(CommentEntity $commentEntity): void
+    public function addCommentToBlogId(CommentEntity $commentEntity): void
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -75,11 +61,8 @@ class CommentRepository
 
     /**
      * Returns the last inserted comment by Blog id
-     *
-     * @param int $blogId
-     * @return CommentEntity
      */
-    public static function getLastAddedCommentByBlogId(int $blogId): CommentEntity
+    public function getLastAddedCommentByBlogId(int $blogId): ?CommentEntity
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -92,6 +75,6 @@ class CommentRepository
         $stmt->execute(['blogId' => $blogId]);
         $comment = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $comment ? self::createCommentEntityFromData($comment) : null;
+        return $comment ? $this->createCommentEntityFromData($comment) : null;
     }
 }

@@ -12,7 +12,7 @@ use Blog\Router\Response\Response;
 class CategoryController
 {
     /**
-     * @return Response
+     * show all blogs from a category
      * @throws HTTPNotFoundException
      */
     public function detailAction(): Response
@@ -21,9 +21,13 @@ class CategoryController
         $queryParameters = $request->getQueryParameters();
         $categoryId = filter_var($queryParameters['id'] ?? 0, FILTER_VALIDATE_INT);
 
+        /** @var CategoryRepository $categoryRepository */
+        $categoryRepository = Container::getRepository(CategoryRepository::class);
+        /** @var BlogRepository $blogRepository */
+        $blogRepository = Container::getRepository(BlogRepository::class);
         $category = null;
         if ($categoryId) {
-            $category = CategoryRepository::findOneById($categoryId);
+            $category = $categoryRepository->findOneById($categoryId);
         }
 
         if (!$category) {
@@ -35,11 +39,10 @@ class CategoryController
         $limit = 2;
         //start position
         $offset = ($page - 1)*$limit;
-        $totalPages = (int) ceil(BlogRepository::countBlogsByCategoryId($categoryId) / $limit);
-        $blogs = BlogRepository::findBlogsByCategoryId($categoryId, $limit, $offset);
+        $totalPages = (int) ceil($blogRepository->countBlogsByCategoryId($categoryId) / $limit);
 
-        return new Response('blog\blog_by_category.php', [
-            'blogs' => $blogs,
+        return new Response('blog' . DIRECTORY_SEPARATOR . 'blog_by_category.php', [
+            'blogs' => $blogRepository->findBlogsByCategoryId($categoryId, $limit, $offset),
             'category' => $category,
             'currentPage' => $page,
             'totalPages' => $totalPages,

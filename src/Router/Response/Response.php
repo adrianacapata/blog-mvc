@@ -27,7 +27,7 @@ class Response implements ResponseInterface
     /**
      * @throws InvalidTemplateException
      */
-    public function render()
+    public function render(): void
     {
         http_response_code($this->httpStatusCode);
 

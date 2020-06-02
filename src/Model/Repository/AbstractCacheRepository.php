@@ -6,7 +6,8 @@ use Blog\DependencyInjection\Cache;
 
 abstract class AbstractCacheRepository
 {
-    private Cache $cache;
+    /** @var Cache $cache */
+    private $cache;
 
     public function __construct(Cache $cache)
     {

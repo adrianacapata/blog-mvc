@@ -3,7 +3,7 @@ $(document).ready(function () {
        let blogId = $(this).data('id');
 
        $.ajax({
-           url: '/post/dislike',
+           url: '/blog/dislike',
            type: 'get',
            data: {
                'blog_id': blogId
@@ -22,7 +22,7 @@ $(document).ready(function () {
        let blogId = $(this).data('id');
 
        $.ajax({
-           url: '/post/like',
+           url: '/blog/like',
            type: 'get',
            data: {
                'blog_id': blogId
@@ -51,7 +51,8 @@ $(document).ready(function () {
            dataType: 'json',
 
            success: function (response) {
-               $('#add-comment').reset();
+               console.log(response.date);
+               $('#add-comment')[0].reset();
                $('#show-comment').append('<label>' + response.author + ' at ' + response.date + '</label><p> ' + response.comment + '</p>');
                },
            error: function (request) {

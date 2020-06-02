@@ -10,6 +10,7 @@ class Router
 {
     private const CONTROLLER_NAMESPACE = "Blog\\Controller\\";
 
+    /** @var Request $request */
     private $request;
     /** @var Router */
     private static $instance;
@@ -27,15 +28,14 @@ class Router
      */
     public static function getInstance(): Router
     {
-        if (!isset(Router::$instance)) {
-            Router::$instance = new Router();
+        if (!isset(self::$instance)) {
+            self::$instance = new Router();
         }
 
-        return Router::$instance;
+        return self::$instance;
     }
     
     /**
-     * @return ResponseInterface
      * @throws HTTPNotFoundException
      */
     public function request(): ResponseInterface

@@ -15,12 +15,14 @@ class BlogController
 {
     public function indexAction(): Response
     {
-        /** @var CategoryRepository $repository */
-        $repository = Container::getRepository(CategoryRepository::class);
+        /** @var CategoryRepository $categoryRepository */
+        $categoryRepository = Container::getRepository(CategoryRepository::class);
+        /** @var BlogRepository $blogRepository */
+        $blogRepository = Container::getRepository(BlogRepository::class);
 
         return new Response('category' . DIRECTORY_SEPARATOR . 'show.php', [
-            'categoryTree' => $repository->getCategoryTree(),
-            'popularBlogs' => BlogRepository::getPopularity(),
+            'categoryTree' => $categoryRepository->getCategoryTree(),
+            'popularBlogs' => $blogRepository->getPopularity(),
         ]);
     }
 
@@ -32,18 +34,23 @@ class BlogController
         $request = Container::getRequest();
         $blogId = filter_var($request->getQueryParameters()['id'] ?? 0, FILTER_VALIDATE_INT);
 
+        /** @var BlogRepository $blogRepository */
+        $blogRepository = Container::getRepository(BlogRepository::class);
+        /** @var CommentRepository $commentRepository */
+        $commentRepository = Container::getRepository(CommentRepository::class);
+
         $blog = null;
         if ($blogId) {
-            $blog = BlogRepository::findOneById($blogId);
+            $blog = $blogRepository->findOneById($blogId);
         }
 
         if (!$blog) {
             throw new HTTPNotFoundException('Blog not found for id: ' . $blogId);
         }
 
-        return new Response('blog\show.php', [
+        return new Response('blog' . DIRECTORY_SEPARATOR . 'show.php', [
             'blog' => $blog,
-            'comments' => CommentRepository::getCommentsByBlogId($blogId),
+            'comments' => $commentRepository->getCommentsByBlogId($blogId),
         ]);
     }
 
@@ -51,8 +58,12 @@ class BlogController
     {
         $request = Container::getRequest();
         $blogId = $request->getQueryParameters()['blog_id'];
+
+        /** @var BlogRepository $blogRepository */
+        $blogRepository = Container::getRepository(BlogRepository::class);
+
         try {
-            BlogRepository::incrementLikeCountByBlogId($blogId);
+            $blogRepository->incrementLikeCountByBlogId($blogId);
             $status = 'success';
         } catch (Exception $e) {
             $status = 'failed';
@@ -68,8 +79,11 @@ class BlogController
         $request = Container::getRequest();
         $blogId = $request->getQueryParameters()['blog_id'];
 
+        /** @var BlogRepository $blogRepository */
+        $blogRepository = Container::getRepository(BlogRepository::class);
+
         try {
-            BlogRepository::incrementDislikeCountByBlogId($blogId);
+            $blogRepository->incrementDislikeCountByBlogId($blogId);
             $status = 'success';
         } catch (Exception $e) {
             $status = 'failed';

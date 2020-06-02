@@ -4,13 +4,11 @@ namespace Blog\DependencyInjection;
 
 use Blog\Logger\DbLogger;
 use Blog\Logger\FileLogger;
-use Blog\Logger\Logger;
 use Blog\Logger\LoggerInterface;
-use Blog\Model\EntityManager;
+use Blog\Router\Request;
 use InvalidArgumentException;
 use Memcache;
 use PDO;
-use Blog\Router\Request;
 use Swift_SmtpTransport;
 
 class Container
@@ -21,7 +19,7 @@ class Container
     private static $dbConnection;
     /** @var Request */
     private static $request;
-    /** @var Swift_SmtpTransport */
+    /** @var Mailer */
     private static $mailer;
     /** @var Memcache */
     private static $cache;
@@ -29,8 +27,6 @@ class Container
     private static $logger;
 
     /**
-     * @param string|null $name
-     * @return mixed
      * @throws InvalidArgumentException
      */
     public static function getParameters(string $name = null)
@@ -39,7 +35,7 @@ class Container
             require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'parameters.php';
             self::$parameters = $parameters;
         }
-        
+
         if (!isset(self::$parameters[$name])) {
             throw new InvalidArgumentException("`$name` parameter is not defined");
         }
@@ -47,9 +43,6 @@ class Container
         return $name ? self::$parameters[$name] : self::$parameters;
     }
 
-    /**
-     * @return PDO
-     */
     public static function getDbConnection(): PDO
     {
         if (self::$dbConnection === null) {
@@ -69,7 +62,7 @@ class Container
 
     public static function getRequest(): Request
     {
-          return self::$request = Request::getInstance();
+        return self::$request = Request::getInstance();
     }
 
     public static function getMailer(): Mailer
@@ -87,7 +80,6 @@ class Container
         return self::$mailer;
     }
 
-    //getLogger - get from params type (file or db) - return loggerInterface
     public static function getLogger(): LoggerInterface
     {
         if (self::$logger === null) {
@@ -102,7 +94,7 @@ class Container
         return self::$logger;
     }
 
-    public static function getCache()
+    public static function getCache(): Cache
     {
         if (self::$cache === null) {
             $parameters = self::getParameters('memcached');
@@ -115,10 +107,9 @@ class Container
     }
 
     /**
-     * @param $repository
-     * @return mixed
+     * Returns a repository instance
      */
-    public static function getRepository($repository)
+    public static function getRepository(string $repository)
     {
         $repositories[$repository] = new $repository(self::getCache());
 

@@ -30,6 +30,8 @@ class ArchiveController
         //validate input word
         $validator = new SearchValidator($request);
         $searchedWord = $validator->validate();
+        /** @var BlogRepository $blogRepository */
+        $blogRepository = Container::getRepository(BlogRepository::class);
 
         $status = Response::HTTP_STATUS_OK;
         $errors = '';
@@ -38,13 +40,13 @@ class ArchiveController
             $errors = $validator->getValidationErrors();
             $status = $errors ? Response::HTTP_STATUS_BAD_REQUEST : Response::HTTP_STATUS_OK;
         }
-        $totalPages = (int)ceil(BlogRepository::searchCount($searchedWord) / $limit);
+        $totalPages = (int)ceil($blogRepository->searchCount($searchedWord) / $limit);
 
         //search input true
         return new Response(
-            '\archive\list.php',
+            'archive' . DIRECTORY_SEPARATOR . 'list.php',
             [
-                'posts' => BlogRepository::searchResult($limit, $offset, $searchedWord),
+                'posts' => $blogRepository->searchResult($limit, $offset, $searchedWord),
                 'searchedWord' => $searchedWord,
                 'currentPage' => $page,
                 'totalPages' => $totalPages,

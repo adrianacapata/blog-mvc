@@ -43,6 +43,7 @@ class CommentValidator
             $commentEntity->setBlogId((int)$blogId);
             $commentEntity->setAuthorName($author);
             $commentEntity->setContent($comment);
+            $commentEntity->setCreatedAt(date('Y-m-d H:i:s'));
 
             return $commentEntity;
         }

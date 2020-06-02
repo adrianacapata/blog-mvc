@@ -9,38 +9,13 @@ use PDO;
 
 class CategoryRepository extends AbstractCacheRepository
 {
-    public const CATEGORY_TREE_FROM_CACHE = 'categoryTree';
-
-    /**
-     * @return ArrayObject|CategoryEntity[]
-     */
-    public static function fetchCategories(): ArrayObject
-    {
-        $conn = Container::getDbConnection();
-        $stmt = $conn->query('Select * FROM `category`');
-        $stmt->execute();
-
-        $categoriesData = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $categories = new ArrayObject();
-        foreach ($categoriesData as $category) {
-            $categoryEntity = new CategoryEntity();
-            $categoryEntity->setId($category['id']);
-            $categoryEntity->setName($category['name']);
-            $categoryEntity->setTreeLeft($category['tree_left']);
-            $categoryEntity->setTreeRight($category['tree_right']);
-            $categoryEntity->setLevel($category['level']);
-
-            $categories->append($categoryEntity);
-        }
-
-        return $categories;
-    }
+    public const CATEGORY_TREE_FROM_CACHE = 'categoryyTree';
 
     /**
      *
      * @return array [
      *   $anyKey = > [
-     *      'name' => 'Categ 1',
+     *      'name' => 'Category 1',
      *      'level' => 1,
      *      'posts' => 0,
      *   ]
@@ -68,12 +43,7 @@ class CategoryRepository extends AbstractCacheRepository
         };
     }
 
-    /**
-     * Will return a single Category entity from db by $id
-     * @param int $id
-     * @return CategoryEntity|null
-     */
-    public static function findOneById(int $id): ?CategoryEntity
+    public function findOneById(int $id): ?CategoryEntity
     {
         $conn = Container::getDbConnection();
 
@@ -81,14 +51,10 @@ class CategoryRepository extends AbstractCacheRepository
         $stmt->execute(['id' => $id]);
         $categoryData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $categoryData ? self::createCategoryEntityFromData($categoryData) : null;
+        return $categoryData ? $this->createCategoryEntityFromData($categoryData) : null;
     }
 
-    /**
-     * @param array $categoryData
-     * @return CategoryEntity
-     */
-    private static function createCategoryEntityFromData(array $categoryData): CategoryEntity
+    private function createCategoryEntityFromData(array $categoryData): CategoryEntity
     {
         $categoryEntity = new CategoryEntity();
         $categoryEntity->setId($categoryData['id']);
@@ -97,5 +63,31 @@ class CategoryRepository extends AbstractCacheRepository
         $categoryEntity->setTreeRight($categoryData['tree_right']);
 
         return $categoryEntity;
+    }
+
+
+    /**
+     * @return ArrayObject|CategoryEntity[]
+     */
+    public function fetchCategories(): ArrayObject
+    {
+        $conn = Container::getDbConnection();
+        $stmt = $conn->query('Select * FROM `category`');
+        $stmt->execute();
+
+        $categoriesData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $categories = new ArrayObject();
+        foreach ($categoriesData as $category) {
+            $categoryEntity = new CategoryEntity();
+            $categoryEntity->setId($category['id']);
+            $categoryEntity->setName($category['name']);
+            $categoryEntity->setTreeLeft($category['tree_left']);
+            $categoryEntity->setTreeRight($category['tree_right']);
+            $categoryEntity->setLevel($category['level']);
+
+            $categories->append($categoryEntity);
+        }
+
+        return $categories;
     }
 }

@@ -54,59 +54,41 @@ class Request
     /**
      * @return mixed
      */
-    //base url
     public function getUrl()
     {
         return $this->url;
     }
 
-    /**
-     * @return array
-     */
-    public function getQueryParameters()
+    public function getQueryParameters(): array
     {
         return $this->queryParameters;
     }
 
-    /**
-     * @return array
-     */
-    public function getPostParameters()
+    public function getPostParameters(): array
     {
         return $this->postParameters;
     }
 
-    /**
-     * @return array
-     */
-    public function getFiles()
+    public function getFiles(): array
     {
         return $this->files;
     }
 
-    /**
-     * @return string
-     */
     public function getControllerName(): string
     {
         return $this->controllerName;
     }
 
-    /**
-     * @return string
-     */
     public function getActionName(): string
     {
         return $this->actionName;
     }
 
-    // .... public methods
-
     private function initControllerAction(): void
     {
         preg_match_all('/(?:\/)(\w+)/', $this->url, $urlElements);
 
-        $this->controllerName = $urlElements[1][0] ?? null;
+        $this->controllerName = ucfirst($urlElements[1][0]);
 
         $this->actionName = empty($urlElements[1][1]) ? 'index' : $urlElements[1][1];
     }

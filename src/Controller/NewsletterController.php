@@ -13,7 +13,7 @@ use Exception;
 class NewsletterController
 {
     /**
-     * saves input email to send the newsletter to it
+     * saves input email and sends the newsletter to it
      * @return JSONResponse
      */
     public function subscribeAction(): JSONResponse
@@ -27,12 +27,15 @@ class NewsletterController
             ], Response::HTTP_STATUS_NOT_FOUND);
         }
 
+        /** @var NewsletterRepository $newsletterRepository */
+        $newsletterRepository = Container::getRepository(NewsletterRepository::class);
+
         $validator = new SubscribeValidator(Container::getRequest());
         $newsletterEntity = $validator->validate();
 
         if ($newsletterEntity) {
             try {
-                NewsletterRepository::addSubscriber($newsletterEntity);
+                $newsletterRepository->addSubscriber($newsletterEntity);
 
                 return new JSONResponse();
             } catch (Exception $e) {
@@ -49,15 +52,16 @@ class NewsletterController
         ], Response::HTTP_STATUS_BAD_REQUEST);
     }
 
-    //TODO create a validation class for email - refactor this action
     public function unsubscribeAction(): Response
     {
         $validator = new UnsubscribeValidator(Container::getRequest());
         $newsletterEntity = $validator->validate();
 
+        /** @var NewsletterRepository $newsletterRepository */
+        $newsletterRepository = Container::getRepository(NewsletterRepository::class);
         if ($newsletterEntity) {
             //treat validation case
-            $newsletter = NewsletterRepository::findOneByEmail($newsletterEntity->getEmail());
+            $newsletter = $newsletterRepository->findOneByEmail($newsletterEntity->getEmail());
             if (!$newsletter) {
                 return new Response(
                     'pageNotFound.php',
@@ -68,9 +72,9 @@ class NewsletterController
                 );
             }
 
-            NewsletterRepository::removeSubscriber($newsletter);
+            $newsletterRepository->removeSubscriber($newsletter);
 
-            return new Response('/subscription/unsubscribe.php');
+            return new Response('subscription' . DIRECTORY_SEPARATOR . 'unsubscribe.php');
         }
         $errors = $validator->getValidationErrors();
 

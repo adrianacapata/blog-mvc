@@ -20,9 +20,6 @@ class SearchValidator
         $this->request = $request;
     }
 
-    /**
-     * @return string|null
-     */
     public function validate(): ?string
     {
         $getParameters = $this->request->getQueryParameters();
@@ -38,17 +35,12 @@ class SearchValidator
 
     /**
      * Returns an array with error messages if word is not valid
-     *
-     * @return array
      */
     public function getValidationErrors(): array
     {
         return $this->errors;
     }
 
-    /**
-     * @param string|null $word
-     */
     private function validateWord(?string $word): void
     {
         if (preg_match('/[^a-zA-Z0-9_\-\s]+/', $word)) {

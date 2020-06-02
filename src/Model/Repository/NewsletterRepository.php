@@ -9,11 +9,7 @@ use PDO;
 
 class NewsletterRepository
 {
-    /**
-     * @param array $data
-     * @return NewsletterEntity
-     */
-    private static function createBlogSubscribeEntityFromData(array $data): NewsletterEntity
+    private function createBlogSubscribeEntityFromData(array $data): NewsletterEntity
     {
         $blogSubscribe = new NewsletterEntity();
         $blogSubscribe->setEmail($data['email']);
@@ -21,10 +17,7 @@ class NewsletterRepository
         return $blogSubscribe;
     }
 
-    /**
-     * @param NewsletterEntity $blogSubscribe
-     */
-    public static function addSubscriber(NewsletterEntity $blogSubscribe): void
+    public function addSubscriber(NewsletterEntity $blogSubscribe): void
     {
         $conn = Container::getDbConnection();
         $email = $blogSubscribe->getEmail();
@@ -39,7 +32,7 @@ class NewsletterRepository
     /**
      * @return ArrayObject|NewsletterEntity[]
      */
-    public static function getAllEmailAddresses(): ArrayObject
+    public function getAllEmailAddresses(): ArrayObject
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->query('
@@ -50,16 +43,13 @@ class NewsletterRepository
 
         $blogSubscribe = new ArrayObject();
         foreach ($emailData as $email) {
-            $blogSubscribe->append(self::createBlogSubscribeEntityFromData($email));
+            $blogSubscribe->append($this->createBlogSubscribeEntityFromData($email));
         }
 
         return $blogSubscribe;
     }
 
-    /**
-     * @param NewsletterEntity $blogSubscribe
-     */
-    public static function removeSubscriber(NewsletterEntity $blogSubscribe): void
+    public function removeSubscriber(NewsletterEntity $blogSubscribe): void
     {
         $conn = Container::getDbConnection();
         $email = $blogSubscribe->getEmail();
@@ -76,7 +66,7 @@ class NewsletterRepository
      * @param string $email
      * @return NewsletterEntity|null
      */
-    public static function findOneByEmail(string $email): ?NewsletterEntity
+    public function findOneByEmail(string $email): ?NewsletterEntity
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -87,6 +77,6 @@ class NewsletterRepository
         $stmt->execute();
         $blogSubscribeData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $blogSubscribeData ? self::createBlogSubscribeEntityFromData($blogSubscribeData) : null;
+        return $blogSubscribeData ? $this->createBlogSubscribeEntityFromData($blogSubscribeData) : null;
     }
 }

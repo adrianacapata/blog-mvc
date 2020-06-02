@@ -11,7 +11,7 @@ use PDO;
  * Class PostRepository
  * @package Blog\Model\Repository
  */
-class BlogRepository
+class BlogRepository extends AbstractCacheRepository
 {
     // percentage nr for views
     private const VIEW_PERCENTAGE = 65;
@@ -28,7 +28,7 @@ class BlogRepository
      * ]
      * @return BlogEntity
      */
-    private static function createBlogEntityFromData(array $blogData): BlogEntity
+    private function createBlogEntityFromData(array $blogData): BlogEntity
     {
         $blogEntity = new BlogEntity();
         $blogEntity->setId($blogData['id']);
@@ -47,13 +47,7 @@ class BlogRepository
         return $blogEntity;
     }
 
-    /**
-     * Returns a single Blog entity from db by $id
-     *
-     * @param int $blogId
-     * @return BlogEntity|null
-     */
-    public static function findOneById(int $blogId): ?BlogEntity
+    public function findOneById(int $blogId): ?BlogEntity
     {
         $conn = Container::getDbConnection();
 
@@ -67,16 +61,14 @@ class BlogRepository
         $stmt->execute(['blogId' => $blogId]);
         $blogData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $blogData ? self::createBlogEntityFromData($blogData) : null;
+        return $blogData ? $this->createBlogEntityFromData($blogData) : null;
     }
 
     /**
      * calculates the most popular blogs
      * formula: 65*views/100 + 15*(likes-dislike)/100 + 20*comments/100
-     *
-     * @return ArrayObject|BlogEntity[]
      */
-    public static function getPopularity(): ArrayObject
+    public function getPopularity(): ArrayObject
     {
         $conn = Container::getDbConnection();
 
@@ -100,7 +92,7 @@ class BlogRepository
 
         $blogs = new ArrayObject();
         foreach ($blogData as $blog) {
-            $blogs->append(self::createBlogEntityFromData($blog));
+            $blogs->append($this->createBlogEntityFromData($blog));
         }
 
         return $blogs;
@@ -109,12 +101,9 @@ class BlogRepository
     /**
      * Returns post entities filtered by category id
      *
-     * @param int $categoryId
-     * @param int $limit
-     * @param int|null $offset
      * @return ArrayObject|BlogEntity[]
      */
-    public static function findBlogsByCategoryId(int $categoryId, int $limit, int $offset = 0): ArrayObject
+    public function findBlogsByCategoryId(int $categoryId, int $limit, int $offset = 0): ArrayObject
     {
         $conn = Container::getDbConnection();
 
@@ -135,17 +124,13 @@ class BlogRepository
 
         $blogs = new ArrayObject();
         foreach ($blogData as $blog) {
-            $blogs->append(self::createBlogEntityFromData($blog));
+            $blogs->append($this->createBlogEntityFromData($blog));
         }
 
         return $blogs;
     }
 
-    /**
-     * @param int $categoryId
-     * @return int
-     */
-    public static function countBlogsByCategoryId(int $categoryId): int
+    public function countBlogsByCategoryId(int $categoryId): int
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -162,10 +147,7 @@ class BlogRepository
         return $stmt->fetchColumn();
     }
 
-    /**
-     * @param int $blogId
-     */
-    public static function incrementLikeCountByBlogId(int $blogId): void
+    public function incrementLikeCountByBlogId(int $blogId): void
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -176,7 +158,7 @@ class BlogRepository
         $stmt->execute(['blogId' => $blogId]);
     }
 
-    public static function incrementDislikeCountByBlogId(int $blogId): void
+    public function incrementDislikeCountByBlogId(int $blogId): void
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -190,9 +172,8 @@ class BlogRepository
     /**
      * Archive blogs older than one year
      * Returns nr of archived blogs
-     * @return int
      */
-    public static function archiveBlogs(): ?int
+    public function archiveBlogs(): ?int
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -207,11 +188,9 @@ class BlogRepository
     }
 
     /**
-     * @param int $limit
-     * @param int $offset
      * @return ArrayObject|BlogEntity[]
      */
-    public static function getArchivedBlogs(int $limit, int $offset): ArrayObject
+    public function getArchivedBlogs(int $limit, int $offset): ArrayObject
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -227,16 +206,13 @@ class BlogRepository
 
         $blogs = new ArrayObject();
         foreach ($blogData as $blog) {
-            $blogs->append(self::createBlogEntityFromData($blog));
+            $blogs->append($this->createBlogEntityFromData($blog));
         }
 
         return $blogs;
     }
 
-    /**
-     * @return int
-     */
-    public static function getArchivedBlogsCount(): int
+    public function getArchivedBlogsCount(): int
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -249,13 +225,7 @@ class BlogRepository
         return $stmt->fetchColumn();
     }
 
-    /**
-     * @param string|null $word
-     * @param int $limit
-     * @param int $offset
-     * @return ArrayObject
-     */
-    public static function searchResult(int $limit, int $offset, ?string $word): ArrayObject
+    public function searchResult(int $limit, int $offset, ?string $word): ArrayObject
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('
@@ -277,18 +247,14 @@ class BlogRepository
 
         $blogs = new ArrayObject();
         foreach ($blogData as $blog) {
-            $blogs->append(self::createBlogEntityFromData($blog));
+            $blogs->append($this->createBlogEntityFromData($blog));
 
         }
 
         return $blogs;
     }
 
-    /**
-     * @param string|null $word
-     * @return bool
-     */
-    public static function searchCount(?string $word): bool
+    public function searchCount(?string $word): int
     {
         $conn = Container::getDbConnection();
         $stmt = $conn->prepare('

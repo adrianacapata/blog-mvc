@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .'vendor'. DIRECTORY_SEPARATOR . 'autoload.php';
 
 use Blog\Router\Exception\HTTPNotFoundException;
 use Blog\Router\Response\Response;
@@ -13,5 +13,4 @@ try {
     $response = new Response('pageNotFound.php', ['message' => $e->getMessage()], Response::HTTP_STATUS_NOT_FOUND);
 }
 $response->render();
-
 

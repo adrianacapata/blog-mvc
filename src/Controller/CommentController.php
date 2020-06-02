@@ -21,12 +21,13 @@ class CommentController
                 ],
             ], Response::HTTP_STATUS_NOT_FOUND);
         }
-
+        /** @var CommentRepository $commentRepository */
+        $commentRepository = Container::getRepository(CommentRepository::class);
         $validator = new CommentValidator(Container::getRequest());
         $commentEntity = $validator->validate();
         if ($commentEntity) {
             try {
-                CommentRepository::addCommentToBlogId($commentEntity);
+                $commentRepository->addCommentToBlogId($commentEntity);
 
                 return new JSONResponse([
                     'author' => $commentEntity->getAuthorName(),
