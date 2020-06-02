@@ -9,7 +9,7 @@ use PDO;
 
 class CategoryRepository extends AbstractCacheRepository
 {
-    public const CATEGORY_TREE_FROM_CACHE = 'categoryyTree';
+    public const CATEGORY_TREE_FROM_CACHE = 'categoryTree';
 
     /**
      *
